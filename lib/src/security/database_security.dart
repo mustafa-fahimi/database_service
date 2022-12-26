@@ -16,9 +16,6 @@ class DatabaseSecurity {
           if (secureStorageKey == null) {
             final key = Hive.generateSecureKey();
             await _secureStorage.write(
-              aOptions: const AndroidOptions(
-                encryptedSharedPreferences: true,
-              ),
               iOptions: const IOSOptions(
                 accessibility: KeychainAccessibility.first_unlock,
               ),
@@ -40,9 +37,6 @@ class DatabaseSecurity {
   Future<HiveCipher?> readEncryptionCipher() async => _secureStorage
           .read(
         key: _secureKey,
-        aOptions: const AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
         iOptions: const IOSOptions(
           accessibility: KeychainAccessibility.first_unlock,
         ),
