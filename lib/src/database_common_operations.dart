@@ -1,54 +1,53 @@
 import 'package:dartz/dartz.dart';
-import 'package:database_service/src/database_errors.dart';
 import 'package:database_service/src/database_service.dart';
+import 'package:database_service/src/errors/database_failure.dart';
 import 'package:database_service/src/no_param.dart';
 
-/// This class includes common functionality of database service with error handling
+/// This class includes common functionality of db service with error handling
 class DatabaseCommonOperations<R> {
-  final String boxName;
-  final DatabaseService databaseService;
-
   DatabaseCommonOperations({
     required this.boxName,
     required this.databaseService,
   });
+  final String boxName;
+  final DatabaseService databaseService;
 
   /// This method save data with the type [R] to the database service.
   /// If some data is already in the database then it will override data.
-  Future<Either<DatabaseError, NoParam>> cacheData({
+  Future<Either<DatabaseFailure, NoParam>> cacheData({
     required String fieldKey,
     required R value,
   }) async =>
-      await databaseService.addOrUpdate(boxName, fieldKey, value).then(
+      databaseService.addOrUpdate(boxName, fieldKey, value).then(
             (res) => res.fold(
-              (dbError) => left<DatabaseError, NoParam>(
+              (dbError) => left<DatabaseFailure, NoParam>(
                 dbError,
               ),
-              (response) => right<DatabaseError, NoParam>(
+              (response) => right<DatabaseFailure, NoParam>(
                 const NoParam(),
               ),
             ),
           );
 
   /// Retrive the data from the database.
-  Future<Either<DatabaseError, R?>> getCachedData({
+  Future<Either<DatabaseFailure, R?>> getCachedData({
     required String fieldKey,
   }) async =>
-      await databaseService
+      databaseService
           .read(boxName, fieldKey)
           .then(
             (res) => res.fold(
-              (dbError) => left<DatabaseError, R?>(
+              (dbError) => left<DatabaseFailure, R?>(
                 dbError,
               ),
-              (response) => right<DatabaseError, R?>(
+              (response) => right<DatabaseFailure, R?>(
                 response as R?,
               ),
             ),
           )
           .catchError(
-            (e) => left<DatabaseError, R?>(
-              DatabaseError(errorMessage: e.toString()),
+            (dynamic e) => left<DatabaseFailure, R?>(
+              DatabaseFailure(message: e.toString()),
             ),
           );
 }

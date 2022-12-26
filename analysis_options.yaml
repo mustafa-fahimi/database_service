@@ -1,1 +1,18 @@
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.3.1.0.yaml
+linter:
+  rules:
+    public_member_api_docs: false
+    one_member_abstracts: false
+    unnecessary_this: false
+    must_be_immutable: false
+    use_super_parameters: false
+
+analyzer:
+  exclude:
+    - lib/**.g.dart
+    - lib/**.gr.dart
+    - lib/**.config.dart
+    - lib/**.freezed.dart
+  errors:
+    todo: ignore
+    fixme: ignore
