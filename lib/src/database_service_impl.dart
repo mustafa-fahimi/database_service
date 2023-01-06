@@ -6,6 +6,7 @@ import 'package:database_service/src/errors/database_exceptions.dart';
 import 'package:database_service/src/errors/database_failure.dart';
 import 'package:database_service/src/no_param.dart';
 import 'package:database_service/src/security/database_security.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -32,7 +33,11 @@ class DatabaseServiceImpl extends DatabaseService {
       await _databaseSecurity.generateAndSaveSecureKeyIfNotExist();
 
       /// Initialize the database with a path
-      await Hive.initFlutter((await _getDatabaseDirectory()).path);
+      if (kIsWeb) {
+        await Hive.initFlutter();
+      } else {
+        await Hive.initFlutter((await _getDatabaseDirectory()).path);
+      }
     } on path_provider.MissingPlatformDirectoryException {
       await Hive.initFlutter();
     } on MissingPluginException {
