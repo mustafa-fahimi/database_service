@@ -37,17 +37,7 @@ class DatabaseServiceImpl extends DatabaseService {
   }
 
   Future<Directory> _getDatabaseDirectory() async {
-    if (Platform.isMacOS) {
-      return path_provider
-          .getLibraryDirectory()
-          .then(
-            (libraryPath) => Directory('${libraryPath.path}/clasor_database'),
-          )
-          .catchError(
-            (dynamic e) => throw DatabaseException(message: e.toString()),
-          );
-    } else {
-      return path_provider
+     return path_provider
           .getApplicationDocumentsDirectory()
           .then(
             (appDocumentDirectory) => Directory(
@@ -57,7 +47,6 @@ class DatabaseServiceImpl extends DatabaseService {
           .catchError(
             (dynamic e) => throw DatabaseException(message: e.toString()),
           );
-    }
   }
 
   /// Opens a box only with encryption key. If there is no encryption key then
