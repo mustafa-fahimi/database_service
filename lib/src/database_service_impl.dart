@@ -10,39 +10,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:path_provider_foundation/path_provider_foundation.dart';
 
 class DatabaseServiceImpl extends DatabaseService {
   DatabaseServiceImpl();
   final DatabaseSecurity _databaseSecurity = DatabaseSecurity();
-
-  Future<Directory> _getDatabaseDirectory() async {
-    if (Platform.isMacOS) {
-      return PathProviderFoundation()
-          .getApplicationDocumentsPath()
-          .then(
-            (appDocumentPath) => Directory('$appDocumentPath/database'),
-          )
-          .catchError(
-            (dynamic e) => throw DatabaseException(
-              message: e.toString(),
-            ),
-          );
-    } else {
-      return path_provider
-          .getApplicationDocumentsDirectory()
-          .then(
-            (appDocumentDirectory) => Directory(
-              '${appDocumentDirectory.path}/database',
-            ),
-          )
-          .catchError(
-            (dynamic e) => throw DatabaseException(
-              message: e.toString(),
-            ),
-          );
-    }
-  }
 
   /// Database initialization setup
   @override
@@ -62,6 +33,30 @@ class DatabaseServiceImpl extends DatabaseService {
       await Hive.initFlutter();
     } catch (e) {
       throw DatabaseException(message: e.toString());
+    }
+  }
+
+  Future<Directory> _getDatabaseDirectory() async {
+    if (Platform.isMacOS) {
+      return path_provider
+          .getLibraryDirectory()
+          .then(
+            (libraryPath) => Directory('${libraryPath.path}/clasor_database'),
+          )
+          .catchError(
+            (dynamic e) => throw DatabaseException(message: e.toString()),
+          );
+    } else {
+      return path_provider
+          .getApplicationDocumentsDirectory()
+          .then(
+            (appDocumentDirectory) => Directory(
+              '${appDocumentDirectory.path}/clasor_database',
+            ),
+          )
+          .catchError(
+            (dynamic e) => throw DatabaseException(message: e.toString()),
+          );
     }
   }
 

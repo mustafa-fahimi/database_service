@@ -4,7 +4,7 @@ class DatabaseException implements Exception {
 
   @override
   String toString() {
-    return 'DBServiceException: $message';
+    return 'DatabaseException: $message';
   }
 }
 
