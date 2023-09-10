@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:database_service/src/errors/database_exceptions.dart';
+import 'package:database_broker/src/errors/database_exceptions.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

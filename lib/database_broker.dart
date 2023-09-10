@@ -1,4 +1,5 @@
-library database_service;
+/// @author Mostafa Fahimi
+library database_broker;
 
 export 'src/database_common_operations.dart';
 export 'src/database_service.dart';

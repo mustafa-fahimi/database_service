@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:database_service/src/database_service.dart';
-import 'package:database_service/src/errors/database_exceptions.dart';
-import 'package:database_service/src/errors/database_failure.dart';
-import 'package:database_service/src/no_param.dart';
-import 'package:database_service/src/security/database_security.dart';
+import 'package:database_broker/src/database_service.dart';
+import 'package:database_broker/src/errors/database_exceptions.dart';
+import 'package:database_broker/src/errors/database_failure.dart';
+import 'package:database_broker/src/no_param.dart';
+import 'package:database_broker/src/security/database_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -37,16 +37,16 @@ class DatabaseServiceImpl extends DatabaseService {
   }
 
   Future<Directory> _getDatabaseDirectory() async {
-     return path_provider
-          .getApplicationDocumentsDirectory()
-          .then(
-            (appDocumentDirectory) => Directory(
-              '${appDocumentDirectory.path}/clasor_database',
-            ),
-          )
-          .catchError(
-            (dynamic e) => throw DatabaseException(message: e.toString()),
-          );
+    return path_provider
+        .getApplicationDocumentsDirectory()
+        .then(
+          (appDocumentDirectory) => Directory(
+            '${appDocumentDirectory.path}/clasor_database',
+          ),
+        )
+        .catchError(
+          (dynamic e) => throw DatabaseException(message: e.toString()),
+        );
   }
 
   /// Opens a box only with encryption key. If there is no encryption key then
