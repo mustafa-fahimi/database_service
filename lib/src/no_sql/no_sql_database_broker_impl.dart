@@ -1,19 +1,19 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:database_broker/src/database_service.dart';
-import 'package:database_broker/src/errors/database_exceptions.dart';
-import 'package:database_broker/src/errors/database_failure.dart';
-import 'package:database_broker/src/no_param.dart';
-import 'package:database_broker/src/security/database_security.dart';
+import 'package:database_broker/src/common/database_exception.dart';
+import 'package:database_broker/src/common/database_failure.dart';
+import 'package:database_broker/src/common/no_param.dart';
+import 'package:database_broker/src/no_sql/no_sql_database_broker.dart';
+import 'package:database_broker/src/no_sql/security/no_sql_database_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-class DatabaseServiceImpl extends DatabaseService {
-  DatabaseServiceImpl();
-  final DatabaseSecurity _databaseSecurity = DatabaseSecurity();
+class NoSqlDatabaseBrokerImpl extends NoSqlDatabaseBroker {
+  NoSqlDatabaseBrokerImpl();
+  final NoSqlDatabaseSecurity _databaseSecurity = NoSqlDatabaseSecurity();
 
   /// Database initialization setup
   @override
@@ -32,7 +32,7 @@ class DatabaseServiceImpl extends DatabaseService {
     } on MissingPluginException {
       await Hive.initFlutter();
     } catch (e) {
-      throw DatabaseException(message: e.toString());
+      throw DatabaseException(error: e.toString());
     }
   }
 
@@ -45,34 +45,22 @@ class DatabaseServiceImpl extends DatabaseService {
           ),
         )
         .catchError(
-          (dynamic e) => throw DatabaseException(message: e.toString()),
+          (dynamic e) => throw DatabaseException(error: e.toString()),
         );
   }
 
   /// Opens a box only with encryption key. If there is no encryption key then
   /// throw `DatabaseError`
   @override
-  Future<Box<dynamic>> openBox(String boxName) async =>
-      _databaseSecurity.readEncryptionCipher().then(
-        (secureKey) async {
-          if (secureKey == null) {
-            throw const ReadSecureKeyException();
-          } else {
-            return Hive.openBox<dynamic>(
-              boxName,
-              encryptionCipher: secureKey,
-            ).then((box) => box).catchError(
-                  (dynamic e) => throw DatabaseException(
-                    message: e.toString(),
-                  ),
-                );
-          }
-        },
-      ).catchError(
-        (dynamic error) => throw DatabaseException(
-          message: error.toString(),
-        ),
-      );
+  Future<Box<dynamic>> openBox(String boxName) async {
+    final secureKey = await _databaseSecurity.readEncryptionCipher();
+    return Hive.openBox<dynamic>(
+      boxName,
+      encryptionCipher: secureKey,
+    ).then((box) => box).catchError(
+          (dynamic e) => throw DatabaseException(error: e.toString()),
+        );
+  }
 
   /// Close all open boxes
   @override

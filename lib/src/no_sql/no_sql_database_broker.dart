@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:database_broker/src/errors/database_failure.dart';
-import 'package:database_broker/src/no_param.dart';
+import 'package:database_broker/src/common/database_failure.dart';
+import 'package:database_broker/src/common/no_param.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-abstract class DatabaseService {
-  const DatabaseService();
+abstract class NoSqlDatabaseBroker {
+  const NoSqlDatabaseBroker();
 
   Future<void> initialize();
 

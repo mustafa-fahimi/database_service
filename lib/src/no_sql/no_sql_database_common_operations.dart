@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:database_broker/src/database_service.dart';
-import 'package:database_broker/src/errors/database_failure.dart';
-import 'package:database_broker/src/no_param.dart';
+import 'package:database_broker/src/common/database_failure.dart';
+import 'package:database_broker/src/common/no_param.dart';
+import 'package:database_broker/src/no_sql/no_sql_database_broker.dart';
 
 /// This class includes common functionality of db service with error handling
-class DatabaseCommonOperations<R> {
-  DatabaseCommonOperations({
+class NoSqlDatabaseCommonOperations<R> {
+  NoSqlDatabaseCommonOperations({
     required this.boxName,
     required this.databaseService,
   });
   final String boxName;
-  final DatabaseService databaseService;
+  final NoSqlDatabaseBroker databaseService;
 
   /// This method save data with the type [R] to the database service.
   /// If some data is already in the database then it will override data.

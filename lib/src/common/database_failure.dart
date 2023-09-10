@@ -4,6 +4,6 @@ class DatabaseFailure {
 
   @override
   String toString() {
-    return 'DBServiceFailure: $message';
+    return 'DatabaseFailure: $message';
   }
 }
