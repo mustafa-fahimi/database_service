@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:database_broker/src/common/database_exception.dart';
+import 'package:database_broker/src/common/common_database_exception.dart';
 import 'package:database_broker/src/common/database_failure.dart';
 import 'package:database_broker/src/common/no_param.dart';
 import 'package:database_broker/src/no_sql/no_sql_database_broker.dart';
@@ -32,7 +32,7 @@ class NoSqlDatabaseBrokerImpl extends NoSqlDatabaseBroker {
     } on MissingPluginException {
       await Hive.initFlutter();
     } catch (e) {
-      throw DatabaseException(error: e.toString());
+      throw CommonDatabaseException(error: e.toString());
     }
   }
 
@@ -45,7 +45,7 @@ class NoSqlDatabaseBrokerImpl extends NoSqlDatabaseBroker {
           ),
         )
         .catchError(
-          (dynamic e) => throw DatabaseException(error: e.toString()),
+          (dynamic e) => throw CommonDatabaseException(error: e.toString()),
         );
   }
 
@@ -58,7 +58,7 @@ class NoSqlDatabaseBrokerImpl extends NoSqlDatabaseBroker {
       boxName,
       encryptionCipher: secureKey,
     ).then((box) => box).catchError(
-          (dynamic e) => throw DatabaseException(error: e.toString()),
+          (dynamic e) => throw CommonDatabaseException(error: e.toString()),
         );
   }
 
@@ -66,7 +66,9 @@ class NoSqlDatabaseBrokerImpl extends NoSqlDatabaseBroker {
   @override
   Future<Either<DatabaseFailure, NoParam>> closeDatabase() async => Hive.close()
       .then(
-        (_) => right<DatabaseFailure, NoParam>(const NoParam()),
+        (_) => right<DatabaseFailure, NoParam>(
+          const NoParam(),
+        ),
       )
       .catchError(
         (dynamic e) => left<DatabaseFailure, NoParam>(

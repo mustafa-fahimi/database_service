@@ -1,4 +1,4 @@
-import 'package:database_broker/src/common/database_exception.dart';
+import 'package:database_broker/src/common/common_database_exception.dart';
 
 enum SecureKeyActions {
   read,
@@ -6,7 +6,7 @@ enum SecureKeyActions {
   delete,
 }
 
-class SecureKeyException implements DatabaseException {
+class SecureKeyException implements CommonDatabaseException {
   const SecureKeyException({
     required this.action,
     this.error = '',
