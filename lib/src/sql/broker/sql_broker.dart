@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:dartz/dartz.dart';
 import 'package:database_broker/database_broker.dart';
 import 'package:sqflite/sqflite.dart';
@@ -8,7 +9,7 @@ abstract class SqlBroker {
   Future<String> getSqliteDatabaseFullPath();
 
   Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
-    String? onCreateQuery,
+    List<CreateTableQueries>? onOpenedQueries,
   });
 
   Future<Either<DatabaseFailure, JustOk>> closeSqliteDatabase();

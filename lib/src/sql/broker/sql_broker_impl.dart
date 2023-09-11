@@ -20,15 +20,15 @@ class SqlBrokerImpl implements SqlBroker {
 
   @override
   Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
-    String? onCreateQuery,
+    List<CreateTableQueries>? onOpenedQueries,
   }) async {
     final databasePath = await getSqliteDatabaseFullPath();
     return openDatabase(
       databasePath,
       version: databaseVersion,
-      onCreate: onCreateQuery == null
-          ? null
-          : (db, version) => db.execute(onCreateQuery),
+      onOpen: onOpenedQueries != null && onOpenedQueries.isNotEmpty
+          ? (db) => _onOpened(db, onOpenedQueries)
+          : null,
     )
         .then(
           (Database database) => right<DatabaseFailure, Database>(database),
@@ -38,6 +38,32 @@ class SqlBrokerImpl implements SqlBroker {
             DatabaseFailure(message: e.toString()),
           ),
         );
+  }
+
+  Future<void> _onOpened(
+    Database db,
+    List<CreateTableQueries> createTableQueries,
+  ) async {
+    final batch = db.batch();
+
+    for (final element in createTableQueries) {
+      if (element.checkTableExist) {
+        /// Should check if table exist and if not, then excute the query
+        await db.rawQuery(
+          '''SELECT name FROM sqlite_master WHERE type="table" AND name="${element.table}"''',
+        ).then((queryResult) {
+          if (queryResult.isEmpty) {
+            /// Table does not exist so we run the query
+            batch.execute(element.query);
+          }
+        });
+      } else {
+        /// Run Query anyway
+        batch.execute(element.query);
+      }
+    }
+
+    await batch.commit();
   }
 
   @override
