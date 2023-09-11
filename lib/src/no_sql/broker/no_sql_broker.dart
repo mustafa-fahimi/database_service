@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:database_broker/src/common/database_failure.dart';
-import 'package:database_broker/src/common/no_param.dart';
+import 'package:database_broker/src/common/just_ok.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class NoSqlBroker {
@@ -8,19 +8,19 @@ abstract class NoSqlBroker {
 
   Future<void> initialize();
 
-  Future<Either<DatabaseFailure, NoParam>> closeDatabase();
+  Future<Either<DatabaseFailure, JustOk>> closeDatabase();
 
   Future<Box<dynamic>> openBox(String boxName);
 
-  Future<Either<DatabaseFailure, NoParam>> closeBox(String boxName);
+  Future<Either<DatabaseFailure, JustOk>> closeBox(String boxName);
 
-  Future<Either<DatabaseFailure, NoParam>> write(
+  Future<Either<DatabaseFailure, JustOk>> write(
     String boxName,
     String key,
     dynamic value,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> writeMultiple(
+  Future<Either<DatabaseFailure, JustOk>> writeMultiple(
     String boxName,
     Map<dynamic, dynamic> enteries,
   );
@@ -31,24 +31,24 @@ abstract class NoSqlBroker {
     dynamic defaultValue,
   });
 
-  Future<Either<DatabaseFailure, NoParam>> update(
+  Future<Either<DatabaseFailure, JustOk>> update(
     String boxName,
     String key,
     dynamic value,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> addOrUpdate(
+  Future<Either<DatabaseFailure, JustOk>> addOrUpdate(
     String boxName,
     String key,
     dynamic value,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> delete(
+  Future<Either<DatabaseFailure, JustOk>> delete(
     String boxName,
     String key,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> deleteMultiple(
+  Future<Either<DatabaseFailure, JustOk>> deleteMultiple(
     String boxName,
     Iterable<dynamic> keys,
   );
@@ -57,18 +57,18 @@ abstract class NoSqlBroker {
     String boxName,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> deleteBoxFromDisk(
+  Future<Either<DatabaseFailure, JustOk>> deleteBoxFromDisk(
     String boxName,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> deleteDatabaseFromDisk();
+  Future<Either<DatabaseFailure, JustOk>> deleteDatabaseFromDisk();
 
   Future<Either<DatabaseFailure, bool>> hasProperty(
     String boxName,
     String key,
   );
 
-  Future<Either<DatabaseFailure, NoParam>> registerAdapter<T>(
+  Future<Either<DatabaseFailure, JustOk>> registerAdapter<T>(
     TypeAdapter<T> adapter, {
     bool override = false,
   });

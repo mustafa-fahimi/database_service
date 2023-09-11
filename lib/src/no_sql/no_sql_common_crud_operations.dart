@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:database_broker/src/common/database_failure.dart';
-import 'package:database_broker/src/common/no_param.dart';
+import 'package:database_broker/src/common/just_ok.dart';
 import 'package:database_broker/src/no_sql/broker/no_sql_broker.dart';
 
 /// This class includes common functionality of db service with error handling
@@ -14,17 +14,17 @@ class NoSqlCommonCrudOperations<R> {
 
   /// This method save data with the type [R] to the database service.
   /// If some data is already in the database then it will override data.
-  Future<Either<DatabaseFailure, NoParam>> cacheData({
+  Future<Either<DatabaseFailure, JustOk>> cacheData({
     required String fieldKey,
     required R value,
   }) async =>
       databaseService.addOrUpdate(boxName, fieldKey, value).then(
             (res) => res.fold(
-              (dbError) => left<DatabaseFailure, NoParam>(
+              (dbError) => left<DatabaseFailure, JustOk>(
                 dbError,
               ),
-              (response) => right<DatabaseFailure, NoParam>(
-                const NoParam(),
+              (response) => right<DatabaseFailure, JustOk>(
+                const JustOk(),
               ),
             ),
           );

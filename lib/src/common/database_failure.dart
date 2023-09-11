@@ -1,5 +1,5 @@
 class DatabaseFailure {
-  const DatabaseFailure({this.message});
+  const DatabaseFailure({this.message = 'Something gone wrong!'});
   final String? message;
 
   @override

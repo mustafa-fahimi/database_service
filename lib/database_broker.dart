@@ -3,7 +3,7 @@ library database_broker;
 
 /// Common
 export 'src/common/database_failure.dart';
-export 'src/common/no_param.dart';
+export 'src/common/just_ok.dart';
 
 /// NoSQL
 export 'src/no_sql/broker/no_sql_broker.dart';

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:database_broker/src/common/common_database_exception.dart';
 import 'package:database_broker/src/common/database_failure.dart';
-import 'package:database_broker/src/common/no_param.dart';
+import 'package:database_broker/src/common/just_ok.dart';
 import 'package:database_broker/src/no_sql/broker/no_sql_broker.dart';
 import 'package:database_broker/src/no_sql/security/no_sql_database_security.dart';
 import 'package:flutter/foundation.dart';
@@ -64,28 +64,28 @@ class NoSqlBrokerImpl extends NoSqlBroker {
 
   /// Close all open boxes
   @override
-  Future<Either<DatabaseFailure, NoParam>> closeDatabase() async => Hive.close()
+  Future<Either<DatabaseFailure, JustOk>> closeDatabase() async => Hive.close()
       .then(
-        (_) => right<DatabaseFailure, NoParam>(
-          const NoParam(),
+        (_) => right<DatabaseFailure, JustOk>(
+          const JustOk(),
         ),
       )
       .catchError(
-        (dynamic e) => left<DatabaseFailure, NoParam>(
+        (dynamic e) => left<DatabaseFailure, JustOk>(
           DatabaseFailure(message: e.toString()),
         ),
       );
 
   /// Close a single box of the database
   @override
-  Future<Either<DatabaseFailure, NoParam>> closeBox(
+  Future<Either<DatabaseFailure, JustOk>> closeBox(
     String boxName,
   ) async {
     try {
       final box = await openBox(boxName);
       await box.compact();
       await box.close();
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -94,7 +94,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
   /// Add a new entry to the database.
   /// If the key already exists then return [DatabaseFailure]
   @override
-  Future<Either<DatabaseFailure, NoParam>> write(
+  Future<Either<DatabaseFailure, JustOk>> write(
     String boxName,
     String key,
     dynamic value,
@@ -105,7 +105,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
         return const Left(DatabaseFailure(message: 'duplicate_key'));
       } else {
         await box.put(key, value);
-        return const Right(NoParam());
+        return const Right(JustOk());
       }
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
@@ -114,14 +114,14 @@ class NoSqlBrokerImpl extends NoSqlBroker {
 
   /// Add a set of new entries to the database
   @override
-  Future<Either<DatabaseFailure, NoParam>> writeMultiple(
+  Future<Either<DatabaseFailure, JustOk>> writeMultiple(
     String boxName,
     Map<dynamic, dynamic> enteries,
   ) async {
     try {
       final box = await openBox(boxName);
       await box.putAll(enteries);
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -149,7 +149,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
   /// If the provided [key] exist in the database then update it,
   /// otherwise return [DatabaseFailure]
   @override
-  Future<Either<DatabaseFailure, NoParam>> update(
+  Future<Either<DatabaseFailure, JustOk>> update(
     String boxName,
     String key,
     dynamic value,
@@ -158,7 +158,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
       final box = await openBox(boxName);
       if (box.containsKey(boxName)) {
         await box.put(key, value);
-        return const Right(NoParam());
+        return const Right(JustOk());
       } else {
         return const Left(DatabaseFailure(message: 'key_not_exist'));
       }
@@ -169,7 +169,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
 
   /// Add new data to database and if provided key already exists then update it
   @override
-  Future<Either<DatabaseFailure, NoParam>> addOrUpdate(
+  Future<Either<DatabaseFailure, JustOk>> addOrUpdate(
     String boxName,
     String key,
     dynamic value,
@@ -177,7 +177,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       await box.put(key, value);
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -185,14 +185,14 @@ class NoSqlBrokerImpl extends NoSqlBroker {
 
   /// Delete a single entery from the database
   @override
-  Future<Either<DatabaseFailure, NoParam>> delete(
+  Future<Either<DatabaseFailure, JustOk>> delete(
     String boxName,
     String key,
   ) async {
     try {
       final box = await openBox(boxName);
       await box.delete(key);
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -200,14 +200,14 @@ class NoSqlBrokerImpl extends NoSqlBroker {
 
   /// Delete a set of enteries from the database
   @override
-  Future<Either<DatabaseFailure, NoParam>> deleteMultiple(
+  Future<Either<DatabaseFailure, JustOk>> deleteMultiple(
     String boxName,
     Iterable<dynamic> keys,
   ) async {
     try {
       final box = await openBox(boxName);
       await box.deleteAll(keys);
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -229,13 +229,13 @@ class NoSqlBrokerImpl extends NoSqlBroker {
 
   /// Detele box file from the device storage
   @override
-  Future<Either<DatabaseFailure, NoParam>> deleteBoxFromDisk(
+  Future<Either<DatabaseFailure, JustOk>> deleteBoxFromDisk(
     String boxName,
   ) async {
     try {
       final box = await openBox(boxName);
       await box.deleteFromDisk();
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -245,12 +245,12 @@ class NoSqlBrokerImpl extends NoSqlBroker {
   /// Make sure to call the [initialize] method if you want to
   /// use database after calling this method.
   @override
-  Future<Either<DatabaseFailure, NoParam>> deleteDatabaseFromDisk() async {
+  Future<Either<DatabaseFailure, JustOk>> deleteDatabaseFromDisk() async {
     try {
       final dbDirectory = await _getDatabaseDirectory();
       await dbDirectory.delete(recursive: true);
       await _databaseSecurity.deleteSecureKey();
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }
@@ -275,7 +275,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
   /// If another adapter with same typeId had been already registered,
   /// the adapter will be overridden if [override] set to `true`
   @override
-  Future<Either<DatabaseFailure, NoParam>> registerAdapter<T>(
+  Future<Either<DatabaseFailure, JustOk>> registerAdapter<T>(
     TypeAdapter<T> adapter, {
     bool override = false,
   }) async {
@@ -284,7 +284,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
         adapter,
         override: override,
       );
-      return const Right(NoParam());
+      return const Right(JustOk());
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }

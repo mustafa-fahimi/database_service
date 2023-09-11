@@ -1,0 +1,3 @@
+class JustOk {
+  const JustOk();
+}
