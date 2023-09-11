@@ -4,8 +4,8 @@ import 'package:database_broker/src/common/common_database_exception.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class SqlDatabaseBrokerImpl implements SqlDatabaseBroker {
-  SqlDatabaseBrokerImpl({
+class SqlBrokerImpl implements SqlBroker {
+  SqlBrokerImpl({
     required this.databaseFileName,
     this.databaseVersion = 1,
   }) : assert(

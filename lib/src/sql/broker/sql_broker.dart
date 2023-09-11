@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:database_broker/database_broker.dart';
 import 'package:sqflite/sqflite.dart';
 
-abstract class SqlDatabaseBroker {
-  const SqlDatabaseBroker();
+abstract class SqlBroker {
+  const SqlBroker();
 
   Future<String> getSqliteDatabaseFullPath();
 
