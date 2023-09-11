@@ -19,9 +19,6 @@ class SqlDatabaseBrokerImpl implements SqlDatabaseBroker {
   Database? database;
 
   @override
-  Future<void> initializeSqliteDatabase() async {}
-
-  @override
   Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
     String? onCreateQuery,
   }) async {

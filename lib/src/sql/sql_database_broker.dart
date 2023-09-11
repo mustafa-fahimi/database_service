@@ -5,8 +5,6 @@ import 'package:sqflite/sqflite.dart';
 abstract class SqlDatabaseBroker {
   const SqlDatabaseBroker();
 
-  Future<void> initializeSqliteDatabase();
-
   Future<String> getSqliteDatabaseFullPath();
 
   Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
