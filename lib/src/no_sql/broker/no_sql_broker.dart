@@ -3,8 +3,8 @@ import 'package:database_broker/src/common/database_failure.dart';
 import 'package:database_broker/src/common/no_param.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-abstract class NoSqlDatabaseBroker {
-  const NoSqlDatabaseBroker();
+abstract class NoSqlBroker {
+  const NoSqlBroker();
 
   Future<void> initialize();
 
@@ -12,9 +12,7 @@ abstract class NoSqlDatabaseBroker {
 
   Future<Box<dynamic>> openBox(String boxName);
 
-  Future<Either<DatabaseFailure, NoParam>> closeBox(
-    String boxName,
-  );
+  Future<Either<DatabaseFailure, NoParam>> closeBox(String boxName);
 
   Future<Either<DatabaseFailure, NoParam>> write(
     String boxName,

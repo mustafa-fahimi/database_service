@@ -4,15 +4,15 @@ import 'package:dartz/dartz.dart';
 import 'package:database_broker/src/common/common_database_exception.dart';
 import 'package:database_broker/src/common/database_failure.dart';
 import 'package:database_broker/src/common/no_param.dart';
-import 'package:database_broker/src/no_sql/no_sql_database_broker.dart';
+import 'package:database_broker/src/no_sql/broker/no_sql_broker.dart';
 import 'package:database_broker/src/no_sql/security/no_sql_database_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-class NoSqlDatabaseBrokerImpl extends NoSqlDatabaseBroker {
-  NoSqlDatabaseBrokerImpl();
+class NoSqlBrokerImpl extends NoSqlBroker {
+  NoSqlBrokerImpl();
   final NoSqlDatabaseSecurity _databaseSecurity = NoSqlDatabaseSecurity();
 
   /// Database initialization setup
