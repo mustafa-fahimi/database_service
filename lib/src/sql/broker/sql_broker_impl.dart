@@ -15,7 +15,7 @@ class SqlBrokerImpl implements SqlBroker {
 
   final String databaseFileName;
   final int databaseVersion;
-
+  final defaultConflictAlgorithm = ConflictAlgorithm.ignore;
   Database? database;
 
   @override
@@ -179,7 +179,7 @@ class SqlBrokerImpl implements SqlBroker {
         table,
         values,
         nullColumnHack: nullColumnHack,
-        conflictAlgorithm: conflictAlgorithm,
+        conflictAlgorithm: conflictAlgorithm ?? defaultConflictAlgorithm,
       )
           .then(
         (result) {
@@ -208,7 +208,7 @@ class SqlBrokerImpl implements SqlBroker {
         values,
         where: where,
         whereArgs: whereArgs,
-        conflictAlgorithm: conflictAlgorithm,
+        conflictAlgorithm: conflictAlgorithm ?? defaultConflictAlgorithm,
       )
           .then(
         (result) {

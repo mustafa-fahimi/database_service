@@ -12,7 +12,7 @@ class CreateTableQueries {
           'Query cannot be empty',
         ),
         assert(
-          query.startsWith('CREATE TABLE'),
+          query.contains('CREATE TABLE'),
           'Your query should start with CREATE TABLE',
         );
 

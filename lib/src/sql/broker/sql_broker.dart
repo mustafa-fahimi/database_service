@@ -44,7 +44,7 @@ abstract class SqlBroker {
     String table,
     Map<String, Object?> values, {
     String? nullColumnHack,
-    ConflictAlgorithm? conflictAlgorithm,
+    ConflictAlgorithm conflictAlgorithm,
   });
 
   Future<Either<DatabaseFailure, bool>> update(
