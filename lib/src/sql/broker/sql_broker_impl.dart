@@ -20,14 +20,14 @@ class SqlBrokerImpl implements SqlBroker {
 
   @override
   Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
-    List<CreateTableQueries>? onOpenedQueries,
+    List<CreateTableQueries>? createTableQueries,
   }) async {
     final databasePath = await getSqliteDatabaseFullPath();
     return openDatabase(
       databasePath,
       version: databaseVersion,
-      onOpen: onOpenedQueries != null && onOpenedQueries.isNotEmpty
-          ? (db) => _onOpened(db, onOpenedQueries)
+      onOpen: createTableQueries != null && createTableQueries.isNotEmpty
+          ? (db) => _onOpened(db, createTableQueries)
           : null,
     )
         .then(

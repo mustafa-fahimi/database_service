@@ -9,7 +9,7 @@ abstract class SqlBroker {
   Future<String> getSqliteDatabaseFullPath();
 
   Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
-    List<CreateTableQueries>? onOpenedQueries,
+    List<CreateTableQueries>? createTableQueries,
   });
 
   Future<Either<DatabaseFailure, JustOk>> closeSqliteDatabase();
