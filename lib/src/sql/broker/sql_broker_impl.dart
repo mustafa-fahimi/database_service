@@ -35,7 +35,7 @@ class SqlBrokerImpl implements SqlBroker {
         )
         .catchError(
           (dynamic e) => left<DatabaseFailure, Database>(
-            DatabaseFailure(message: e.toString()),
+            DatabaseFailure.unknown(e.toString()),
           ),
         );
   }
@@ -73,10 +73,10 @@ class SqlBrokerImpl implements SqlBroker {
         await database!.close();
         return right(const JustOk());
       } catch (e) {
-        return left(DatabaseFailure(message: e.toString()));
+        return left(DatabaseFailure.unknown(e.toString()));
       }
     } else {
-      return left(const DatabaseFailure(message: 'Database was null'));
+      return left(const DatabaseFailure.unknown('Database object was null'));
     }
   }
 
@@ -126,7 +126,7 @@ class SqlBrokerImpl implements SqlBroker {
           )
           .catchError(
             (dynamic e) => left<DatabaseFailure, List<Map<String, Object?>>>(
-              DatabaseFailure(message: e.toString()),
+              DatabaseFailure.unknown(e.toString()),
             ),
           );
 
@@ -163,7 +163,7 @@ class SqlBrokerImpl implements SqlBroker {
           )
           .catchError(
             (dynamic e) => left<DatabaseFailure, Map<String, Object?>>(
-              DatabaseFailure(message: e.toString()),
+              DatabaseFailure.unknown(e.toString()),
             ),
           );
 
@@ -190,7 +190,7 @@ class SqlBrokerImpl implements SqlBroker {
         },
       ).catchError(
         (dynamic e) => left<DatabaseFailure, bool>(
-          DatabaseFailure(message: e.toString()),
+          DatabaseFailure.unknown(e.toString()),
         ),
       );
 
@@ -219,7 +219,7 @@ class SqlBrokerImpl implements SqlBroker {
         },
       ).catchError(
         (dynamic e) => left<DatabaseFailure, bool>(
-          DatabaseFailure(message: e.toString()),
+          DatabaseFailure.unknown(e.toString()),
         ),
       );
 
@@ -244,7 +244,7 @@ class SqlBrokerImpl implements SqlBroker {
         },
       ).catchError(
         (dynamic e) => left<DatabaseFailure, bool>(
-          DatabaseFailure(message: e.toString()),
+          DatabaseFailure.unknown(e.toString()),
         ),
       );
 
@@ -260,7 +260,7 @@ class SqlBrokerImpl implements SqlBroker {
           )
           .catchError(
             (dynamic e) => left<DatabaseFailure, JustOk>(
-              DatabaseFailure(message: e.toString()),
+              DatabaseFailure.unknown(e.toString()),
             ),
           );
 
@@ -276,7 +276,7 @@ class SqlBrokerImpl implements SqlBroker {
         },
       ).catchError((dynamic e) {
         return left<DatabaseFailure, int>(
-          DatabaseFailure(message: e.toString()),
+          DatabaseFailure.unknown(e.toString()),
         );
       });
 }

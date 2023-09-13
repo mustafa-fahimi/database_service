@@ -18,24 +18,17 @@ class NoSqlCommonCrudOperations<R> {
     required String fieldKey,
     required R value,
   }) async =>
-      databaseService.addOrUpdate(boxName, fieldKey, value).then(
-            (res) => res.fold(
-              (dbError) => left<DatabaseFailure, JustOk>(
-                dbError,
-              ),
-              (response) => right<DatabaseFailure, JustOk>(
-                const JustOk(),
-              ),
-            ),
-          );
+      databaseService.addOrUpdate(
+        boxName,
+        fieldKey,
+        value,
+      );
 
   /// Retrive the data from the database.
   Future<Either<DatabaseFailure, R?>> getCachedData({
     required String fieldKey,
   }) async =>
-      databaseService
-          .read(boxName, fieldKey)
-          .then(
+      databaseService.read(boxName, fieldKey).then(
             (res) => res.fold(
               (dbError) => left<DatabaseFailure, R?>(
                 dbError,
@@ -43,11 +36,6 @@ class NoSqlCommonCrudOperations<R> {
               (response) => right<DatabaseFailure, R?>(
                 response as R?,
               ),
-            ),
-          )
-          .catchError(
-            (dynamic e) => left<DatabaseFailure, R?>(
-              DatabaseFailure(message: e.toString()),
             ),
           );
 }

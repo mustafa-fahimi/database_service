@@ -3,7 +3,7 @@ import 'package:database_broker/src/common/database_failure.dart';
 import 'package:database_broker/src/common/just_ok.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-abstract class NoSqlBroker {
+abstract interface class NoSqlBroker {
   const NoSqlBroker();
 
   Future<void> initialize();

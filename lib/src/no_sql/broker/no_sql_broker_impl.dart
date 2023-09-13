@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-class NoSqlBrokerImpl extends NoSqlBroker {
+class NoSqlBrokerImpl implements NoSqlBroker {
   NoSqlBrokerImpl();
   final NoSqlDatabaseSecurity _databaseSecurity = NoSqlDatabaseSecurity();
 
@@ -50,7 +50,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
   }
 
   /// Opens a box only with encryption key. If there is no encryption key then
-  /// throw `DatabaseError`
+  /// throw `DatabaseFailure`
   @override
   Future<Box<dynamic>> openBox(String boxName) async {
     final secureKey = await _databaseSecurity.readEncryptionCipher();
@@ -72,7 +72,7 @@ class NoSqlBrokerImpl extends NoSqlBroker {
       )
       .catchError(
         (dynamic e) => left<DatabaseFailure, JustOk>(
-          DatabaseFailure(message: e.toString()),
+          DatabaseFailure.unknown(e.toString()),
         ),
       );
 
@@ -85,9 +85,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
       final box = await openBox(boxName);
       await box.compact();
       await box.close();
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -102,13 +102,13 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       if (box.containsKey(key)) {
-        return const Left(DatabaseFailure(message: 'duplicate_key'));
+        return const Left(DatabaseFailure.unknown('duplicate key'));
       } else {
         await box.put(key, value);
-        return const Right(JustOk());
+        return right(const JustOk());
       }
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -121,9 +121,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       await box.putAll(enteries);
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -140,9 +140,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
         key,
         defaultValue: defaultValue,
       );
-      return Right(dbFetchResult);
+      return right(dbFetchResult);
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -158,12 +158,12 @@ class NoSqlBrokerImpl extends NoSqlBroker {
       final box = await openBox(boxName);
       if (box.containsKey(boxName)) {
         await box.put(key, value);
-        return const Right(JustOk());
+        return right(const JustOk());
       } else {
-        return const Left(DatabaseFailure(message: 'key_not_exist'));
+        return left(const DatabaseFailure.unknown('key_not_exist'));
       }
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -177,9 +177,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       await box.put(key, value);
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -192,9 +192,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       await box.delete(key);
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -207,9 +207,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       await box.deleteAll(keys);
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -221,9 +221,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       final deletedRowsCount = await box.clear();
-      return Right(deletedRowsCount);
+      return right(deletedRowsCount);
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -235,9 +235,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       await box.deleteFromDisk();
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -250,9 +250,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
       final dbDirectory = await _getDatabaseDirectory();
       await dbDirectory.delete(recursive: true);
       await _databaseSecurity.deleteSecureKey();
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -265,9 +265,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
     try {
       final box = await openBox(boxName);
       final hasProperty = box.containsKey(key);
-      return Right(hasProperty);
+      return right(hasProperty);
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 
@@ -284,9 +284,9 @@ class NoSqlBrokerImpl extends NoSqlBroker {
         adapter,
         override: override,
       );
-      return const Right(JustOk());
+      return right(const JustOk());
     } catch (e) {
-      return Left(DatabaseFailure(message: e.toString()));
+      return left(DatabaseFailure.unknown(e.toString()));
     }
   }
 }
