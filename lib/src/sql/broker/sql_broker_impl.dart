@@ -1,6 +1,4 @@
-import 'package:dartz/dartz.dart';
 import 'package:database_broker/database_broker.dart';
-import 'package:database_broker/src/common/common_database_exception.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -19,25 +17,22 @@ class SqlBrokerImpl implements SqlBroker {
   Database? database;
 
   @override
-  Future<Either<DatabaseFailure, Database>> openSqliteDatabase({
+  Future<JobDone> openSqliteDatabase({
     List<CreateTableQueries>? createTableQueries,
   }) async {
-    final databasePath = await getSqliteDatabaseFullPath();
-    return openDatabase(
-      databasePath,
-      version: databaseVersion,
-      onOpen: createTableQueries != null && createTableQueries.isNotEmpty
-          ? (db) => _onOpened(db, createTableQueries)
-          : null,
-    )
-        .then(
-          (Database database) => right<DatabaseFailure, Database>(database),
-        )
-        .catchError(
-          (dynamic e) => left<DatabaseFailure, Database>(
-            DatabaseFailure.unknown(e.toString()),
-          ),
-        );
+    try {
+      final databasePath = await getSqliteDatabaseFullPath();
+      database = await openDatabase(
+        databasePath,
+        version: databaseVersion,
+        onOpen: createTableQueries != null && createTableQueries.isNotEmpty
+            ? (db) => _onOpened(db, createTableQueries)
+            : null,
+      );
+      return const JobDone();
+    } catch (e) {
+      throw DbException(error: e);
+    }
   }
 
   Future<void> _onOpened(
@@ -47,18 +42,16 @@ class SqlBrokerImpl implements SqlBroker {
     final batch = db.batch();
 
     for (final element in createTableQueries) {
-      if (element.checkTableExist) {
-        /// Should check if table exist and if not, then excute the query
-        await db.rawQuery(
-          '''SELECT name FROM sqlite_master WHERE type="table" AND name="${element.table}"''',
-        ).then((queryResult) {
-          if (queryResult.isEmpty) {
-            /// Table does not exist so we run the query
-            batch.execute(element.query);
-          }
-        });
-      } else {
-        /// Run Query anyway
+      if (!element.checkTableExist) {
+        batch.execute(element.query);
+        continue;
+      }
+
+      final queryResult = await db.rawQuery(
+        '''SELECT name FROM sqlite_master WHERE type="table" AND name="${element.table}"''',
+      );
+
+      if (queryResult.isEmpty) {
         batch.execute(element.query);
       }
     }
@@ -67,34 +60,30 @@ class SqlBrokerImpl implements SqlBroker {
   }
 
   @override
-  Future<Either<DatabaseFailure, JustOk>> closeSqliteDatabase() async {
-    if (database != null) {
-      try {
-        await database!.close();
-        return right(const JustOk());
-      } catch (e) {
-        return left(DatabaseFailure.unknown(e.toString()));
-      }
-    } else {
-      return left(const DatabaseFailure.unknown('Database object was null'));
+  Future<JobDone> closeSqliteDatabase() async {
+    if (database == null) {
+      throw const DbException(error: 'Database object was null');
+    }
+    try {
+      await database!.close();
+      return const JobDone();
+    } catch (e) {
+      throw DbException(error: e);
     }
   }
 
   @override
   Future<String> getSqliteDatabaseFullPath() async {
-    return getDatabasesPath()
-        .then(
-          (path) => join(path, databaseFileName),
-        )
-        .catchError(
-          (dynamic e) => throw CommonDatabaseException(
-            error: e.toString(),
-          ),
-        );
+    try {
+      final path = await getDatabasesPath();
+      return join(path, databaseFileName);
+    } catch (e) {
+      throw DbException(error: e);
+    }
   }
 
   @override
-  Future<Either<DatabaseFailure, List<Map<String, Object?>>>> read(
+  Future<List<Map<String, Object?>>> read(
     String table, {
     bool? distinct,
     List<String>? columns,
@@ -105,33 +94,28 @@ class SqlBrokerImpl implements SqlBroker {
     String? orderBy,
     int? limit,
     int? offset,
-  }) async =>
-      database!
-          .query(
-            table,
-            distinct: distinct,
-            columns: columns,
-            where: where,
-            whereArgs: whereArgs,
-            groupBy: groupBy,
-            having: having,
-            orderBy: orderBy,
-            limit: limit,
-            offset: offset,
-          )
-          .then(
-            (queryResult) => right<DatabaseFailure, List<Map<String, Object?>>>(
-              queryResult,
-            ),
-          )
-          .catchError(
-            (dynamic e) => left<DatabaseFailure, List<Map<String, Object?>>>(
-              DatabaseFailure.unknown(e.toString()),
-            ),
-          );
+  }) async {
+    try {
+      final queryResult = await database!.query(
+        table,
+        distinct: distinct,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+      );
+      return queryResult;
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
   @override
-  Future<Either<DatabaseFailure, Map<String, Object?>>> readFirst(
+  Future<Map<String, Object?>> readFirst(
     String table, {
     bool? distinct,
     List<String>? columns,
@@ -142,141 +126,106 @@ class SqlBrokerImpl implements SqlBroker {
     String? orderBy,
     int? limit,
     int? offset,
-  }) async =>
-      database!
-          .query(
-            table,
-            distinct: distinct,
-            columns: columns,
-            where: where,
-            whereArgs: whereArgs,
-            groupBy: groupBy,
-            having: having,
-            orderBy: orderBy,
-            limit: limit,
-            offset: offset,
-          )
-          .then(
-            (queryResult) => right<DatabaseFailure, Map<String, Object?>>(
-              queryResult.isNotEmpty ? queryResult.first : {},
-            ),
-          )
-          .catchError(
-            (dynamic e) => left<DatabaseFailure, Map<String, Object?>>(
-              DatabaseFailure.unknown(e.toString()),
-            ),
-          );
+  }) async {
+    try {
+      final queryResult = await database!.query(
+        table,
+        distinct: distinct,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+      );
+      return queryResult.isNotEmpty ? queryResult.first : <String, Object?>{};
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
   @override
-  Future<Either<DatabaseFailure, bool>> insert(
+  Future<bool> insert(
     String table,
     Map<String, Object?> values, {
     String? nullColumnHack,
     ConflictAlgorithm? conflictAlgorithm,
-  }) async =>
-      database!
-          .insert(
+  }) async {
+    try {
+      final result = await database!.insert(
         table,
         values,
         nullColumnHack: nullColumnHack,
         conflictAlgorithm: conflictAlgorithm ?? defaultConflictAlgorithm,
-      )
-          .then(
-        (result) {
-          if (result == 0) {
-            return right<DatabaseFailure, bool>(false);
-          }
-          return right<DatabaseFailure, bool>(true);
-        },
-      ).catchError(
-        (dynamic e) => left<DatabaseFailure, bool>(
-          DatabaseFailure.unknown(e.toString()),
-        ),
       );
+      return result as bool;
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
   @override
-  Future<Either<DatabaseFailure, bool>> update(
+  Future<bool> update(
     String table,
     Map<String, Object?> values, {
     String? where,
     List<Object?>? whereArgs,
     ConflictAlgorithm? conflictAlgorithm,
-  }) async =>
-      database!
-          .update(
+  }) async {
+    try {
+      final result = await database!.update(
         table,
         values,
         where: where,
         whereArgs: whereArgs,
         conflictAlgorithm: conflictAlgorithm ?? defaultConflictAlgorithm,
-      )
-          .then(
-        (result) {
-          if (result == 0) {
-            return right<DatabaseFailure, bool>(false);
-          }
-          return right<DatabaseFailure, bool>(true);
-        },
-      ).catchError(
-        (dynamic e) => left<DatabaseFailure, bool>(
-          DatabaseFailure.unknown(e.toString()),
-        ),
       );
+      return result as bool;
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
   @override
-  Future<Either<DatabaseFailure, bool>> delete(
+  Future<bool> delete(
     String table, {
     String? where,
     List<Object?>? whereArgs,
-  }) async =>
-      database!
-          .delete(
+  }) async {
+    try {
+      final result = await database!.delete(
         table,
         where: where,
         whereArgs: whereArgs,
-      )
-          .then(
-        (result) {
-          if (result == 0) {
-            return right<DatabaseFailure, bool>(false);
-          }
-          return right<DatabaseFailure, bool>(true);
-        },
-      ).catchError(
-        (dynamic e) => left<DatabaseFailure, bool>(
-          DatabaseFailure.unknown(e.toString()),
-        ),
       );
+      return result as bool;
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
   @override
-  Future<Either<DatabaseFailure, JustOk>> excuteRawQuery(
+  Future<JobDone> excuteRawQuery(
     String sql, [
     List<Object?>? arguments,
-  ]) async =>
-      database!
-          .execute(sql, arguments)
-          .then(
-            (result) => right<DatabaseFailure, JustOk>(const JustOk()),
-          )
-          .catchError(
-            (dynamic e) => left<DatabaseFailure, JustOk>(
-              DatabaseFailure.unknown(e.toString()),
-            ),
-          );
+  ]) async {
+    try {
+      await database!.execute(sql, arguments);
+      return const JobDone();
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
   @override
-  Future<Either<DatabaseFailure, int>> countRows(String table) async =>
-      database!.rawQuery('SELECT COUNT(*) FROM $table').then(
-        (queryResult) {
-          final count = Sqflite.firstIntValue(queryResult);
-          if (count == null) {
-            return right<DatabaseFailure, int>(0);
-          }
-          return right<DatabaseFailure, int>(count);
-        },
-      ).catchError((dynamic e) {
-        return left<DatabaseFailure, int>(
-          DatabaseFailure.unknown(e.toString()),
-        );
-      });
+  Future<int> countRows(String table) async {
+    try {
+      final result = await database!.rawQuery('SELECT COUNT(*) FROM $table');
+      return Sqflite.firstIntValue(result) ?? 0;
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 }

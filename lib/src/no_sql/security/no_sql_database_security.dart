@@ -1,29 +1,44 @@
 import 'dart:convert';
 
-import 'package:database_broker/src/no_sql/errors/secure_key_exception.dart';
+import 'package:database_broker/src/common/db_exception.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+/// A class that handles the security of a NoSQL database by generating
+/// and storing an encryption key for AES data encryption.
+/// It uses FlutterSecureStorage to securely store the encryption key.
 class NoSqlDatabaseSecurity {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final String _secureKey = 'tokenizer';
 
-  /// Generate an encryption key for AES data encryption
-  Future<void> generateAndSaveSecureKeyIfNotExist() async =>
-      _secureStorage.read(key: _secureKey).then(
-        (secureStorageKey) async {
-          /// If we didn't generate encryption key before, then generate it
-          if (secureStorageKey == null) await _writeSecureKey();
-        },
-      ).catchError(
-        (dynamic e) => throw SecureKeyException(
-          action: SecureKeyActions.read,
-          error: e.toString(),
-        ),
-      );
+  /// This method reads the secure key from the secure storage.
+  /// If the key does not exist,
+  /// it generates a new key and saves it to the secure storage.
+  /// If the key already exists, this method does nothing.
+  ///
+  /// Throws a [DbException] if an error occurs while reading or
+  /// writing the secure key.
+  Future<void> generateAndSaveSecureKeyIfNotExist() async {
+    try {
+      final secureStorageKey = await _secureStorage.read(key: _secureKey);
+      if (secureStorageKey == null) {
+        await _writeSecureKey();
+      }
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
+  /// Generates a new secure key using Hive's `generateSecureKey()` method.
+  /// Returns a list of integers representing the new secure key.
   List<int> _generateNewSecureKey() => Hive.generateSecureKey();
 
+  /// This method generates a new secure key and writes it to the secure storage
+  /// using the [_secureStorage] instance.
+  /// The key is written with the [KeychainAccessibility.first_unlock]
+  /// accessibility option on iOS and macOS.
+  /// If an error occurs during the write operation, a [DbException] is
+  /// thrown with the appropriate action and error message.
   Future<void> _writeSecureKey() async {
     try {
       await _secureStorage.write(
@@ -37,25 +52,37 @@ class NoSqlDatabaseSecurity {
         value: base64UrlEncode(_generateNewSecureKey()),
       );
     } catch (e) {
-      throw SecureKeyException(
-        action: SecureKeyActions.write,
-        error: e.toString(),
-      );
+      throw DbException(error: e);
     }
   }
 
-  /// Delete the encryption key from secure storage
-  Future<void> deleteSecureKey() async =>
-      _secureStorage.delete(key: _secureKey).catchError(
-            (dynamic e) => throw SecureKeyException(
-              action: SecureKeyActions.delete,
-              error: e.toString(),
-            ),
-          );
+  /// Deletes the secure key from the secure storage.
+  /// Throws a [DbException] if an error occurs during the deletion.
+  Future<void> deleteSecureKey() async {
+    try {
+      await _secureStorage.delete(key: _secureKey);
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
 
-  /// Retrive the encryption key from secure storage
-  Future<HiveCipher> readEncryptionCipher() async => _secureStorage
-          .read(
+  /// Reads the encryption cipher from secure storage and returns
+  /// a [HiveCipher] object.
+  ///
+  /// The [HiveCipher] object is used to encrypt and decrypt data in the
+  /// database.
+  ///
+  /// This method reads the encryption key from secure storage, decodes
+  /// it from base64Url, and returns a [HiveAesCipher] object initialized with
+  /// the encryption key.
+  ///
+  /// If the secure key is null, a [DbException] is thrown set 
+  /// to 'Secure key is null'.
+  ///
+  /// If an error occurs while reading the secure key a [DbException] is thrown.
+  Future<HiveCipher> readEncryptionCipher() async {
+    try {
+      final secureStorageKey = await _secureStorage.read(
         key: _secureKey,
         iOptions: const IOSOptions(
           accessibility: KeychainAccessibility.first_unlock,
@@ -63,21 +90,16 @@ class NoSqlDatabaseSecurity {
         mOptions: const MacOsOptions(
           accessibility: KeychainAccessibility.first_unlock,
         ),
-      )
-          .then((secureStorageKey) {
-        if (secureStorageKey != null) {
-          final encryptionKey = base64Url.decode(secureStorageKey);
-          return HiveAesCipher(encryptionKey);
-        } else {
-          return throw const SecureKeyException(
-            action: SecureKeyActions.read,
-            error: 'Secure key is null',
-          );
-        }
-      }).catchError(
-        (dynamic e) => throw SecureKeyException(
-          action: SecureKeyActions.read,
-          error: e.toString(),
-        ),
       );
+
+      if (secureStorageKey != null) {
+        final encryptionKey = base64Url.decode(secureStorageKey);
+        return HiveAesCipher(encryptionKey);
+      } else {
+        throw const DbException(error: 'Secure key is null');
+      }
+    } catch (e) {
+      throw DbException(error: e.toString());
+    }
+  }
 }
