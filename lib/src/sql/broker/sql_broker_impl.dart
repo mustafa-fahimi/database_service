@@ -160,7 +160,11 @@ class SqlBrokerImpl implements SqlBroker {
         nullColumnHack: nullColumnHack,
         conflictAlgorithm: conflictAlgorithm ?? defaultConflictAlgorithm,
       );
-      return result as bool;
+      if (result == 1) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       throw DbException(error: e);
     }
@@ -182,7 +186,11 @@ class SqlBrokerImpl implements SqlBroker {
         whereArgs: whereArgs,
         conflictAlgorithm: conflictAlgorithm ?? defaultConflictAlgorithm,
       );
-      return result as bool;
+      if (result == 1) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       throw DbException(error: e);
     }
@@ -200,7 +208,11 @@ class SqlBrokerImpl implements SqlBroker {
         where: where,
         whereArgs: whereArgs,
       );
-      return result as bool;
+      if (result == 1) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       throw DbException(error: e);
     }
