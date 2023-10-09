@@ -8,6 +8,6 @@ export 'src/common/job_done.dart';
 export 'src/no_sql/broker/no_sql_broker.dart';
 export 'src/no_sql/broker/no_sql_broker_impl.dart';
 /// SQL
-export 'src/sql/broker/create_table_queries.dart';
+export 'src/sql/broker/create_table_wrapper.dart';
 export 'src/sql/broker/sql_broker.dart';
 export 'src/sql/broker/sql_broker_impl.dart';

@@ -5,6 +5,7 @@ linter:
     one_member_abstracts: false
     unnecessary_this: false
     use_super_parameters: false
+    lines_longer_than_80_chars: false
 
 analyzer:
   exclude:

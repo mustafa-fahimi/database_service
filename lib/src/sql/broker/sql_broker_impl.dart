@@ -18,16 +18,14 @@ class SqlBrokerImpl implements SqlBroker {
 
   @override
   Future<JobDone> openSqliteDatabase({
-    List<CreateTableQueries>? createTableQueries,
+    List<CreateTableWrapper>? createTableQueries,
   }) async {
     try {
       final databasePath = await getSqliteDatabaseFullPath();
       database = await openDatabase(
         databasePath,
         version: databaseVersion,
-        onOpen: createTableQueries != null && createTableQueries.isNotEmpty
-            ? (db) => _onOpened(db, createTableQueries)
-            : null,
+        onOpen: createTableQueries != null && createTableQueries.isNotEmpty ? (db) => _onOpened(db, createTableQueries) : null,
       );
       return const JobDone();
     } catch (e) {
@@ -37,7 +35,7 @@ class SqlBrokerImpl implements SqlBroker {
 
   Future<void> _onOpened(
     Database db,
-    List<CreateTableQueries> createTableQueries,
+    List<CreateTableWrapper> createTableQueries,
   ) async {
     final batch = db.batch();
 

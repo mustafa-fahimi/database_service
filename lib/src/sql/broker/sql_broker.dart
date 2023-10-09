@@ -11,11 +11,11 @@ abstract interface class SqlBroker {
   /// with a [JobDone] object.
   ///
   /// The optional [createTableQueries] parameter is a list
-  /// of [CreateTableQueries] that will be executed
+  /// of [CreateTableWrapper] that will be executed
   /// after the database is opened. If no queries are provided, the database
   ///  will be opened without creating any tables.
   Future<JobDone> openSqliteDatabase({
-    List<CreateTableQueries>? createTableQueries,
+    List<CreateTableWrapper>? createTableQueries,
   });
 
   /// Closes the SQLite database connection.

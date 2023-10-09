@@ -1,5 +1,5 @@
-class CreateTableQueries {
-  CreateTableQueries({
+class CreateTableWrapper {
+  CreateTableWrapper({
     required this.table,
     required this.query,
     this.checkTableExist = true,
