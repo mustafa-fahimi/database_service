@@ -22,10 +22,12 @@ class SqlBrokerImpl implements SqlBroker {
   }) async {
     try {
       final databasePath = await getSqliteDatabaseFullPath();
-      database = await openDatabase(
+      database = await databaseFactory.openDatabase(
         databasePath,
-        version: databaseVersion,
-        onOpen: createTableQueries != null && createTableQueries.isNotEmpty ? (db) => _onOpened(db, createTableQueries) : null,
+        options: OpenDatabaseOptions(
+          version: databaseVersion,
+          onOpen: createTableQueries != null && createTableQueries.isNotEmpty ? (db) => _onOpened(db, createTableQueries) : null,
+        ),
       );
       return const JobDone();
     } catch (e) {
