@@ -5,6 +5,8 @@ abstract interface class SqlBroker {
   const SqlBroker();
 
   Future<JobDone> openSqliteDatabase({
+    int databaseVersion = 1,
+    int oldVersionMustBe = 1,
     List<String>? onCreateQueries,
     List<String>? onUpgradeQueries,
   });
