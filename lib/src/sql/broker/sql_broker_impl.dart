@@ -52,11 +52,11 @@ class SqlBrokerImpl implements SqlBroker {
   Future<void> _onUpgrade(
     Database db,
     int oldVersion,
-    int newVersion,
+    int oldVersionMustBe,
     List<String>? queries,
   ) async {
     if (queries == null || queries.isEmpty) return;
-    if (newVersion > oldVersion) {
+    if (oldVersion == oldVersionMustBe) {
       await _executeMultupleQueriesWithTransaction(db, queries);
     }
   }
@@ -64,6 +64,7 @@ class SqlBrokerImpl implements SqlBroker {
   @override
   Future<JobDone> openSqliteDatabase({
     int databaseVersion = 1,
+    int oldVersionMustBe = 1,
     List<String>? onCreateQueries,
     List<String>? onUpgradeQueries,
   }) async {
@@ -75,10 +76,10 @@ class SqlBrokerImpl implements SqlBroker {
           version: databaseVersion,
           onConfigure: _onConfigure,
           onCreate: (db, version) => _onCreate(db, onCreateQueries),
-          onUpgrade: (db, oldVersion, newVersion) => _onUpgrade(
+          onUpgrade: (db, oldVersion, _) => _onUpgrade(
             db,
             oldVersion,
-            newVersion,
+            oldVersionMustBe,
             onUpgradeQueries,
           ),
         ),
