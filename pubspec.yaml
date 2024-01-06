@@ -1,6 +1,6 @@
 name: database_broker
 description: A broker for no-sql and sql databases
-version: 2.2.3
+version: 2.3.0
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
