@@ -5,28 +5,82 @@ import 'package:sqflite/sqflite.dart';
 class SqlBrokerImpl implements SqlBroker {
   SqlBrokerImpl({
     required this.databaseFileName,
-    this.databaseVersion = 1,
+    this.defaultConflictAlgorithm = ConflictAlgorithm.ignore,
   }) : assert(
           databaseFileName.split('.').last == 'db',
           'File name format should be like this: Filename.db',
         );
 
   final String databaseFileName;
-  final int databaseVersion;
-  final defaultConflictAlgorithm = ConflictAlgorithm.ignore;
+  final ConflictAlgorithm defaultConflictAlgorithm;
   Database? database;
+
+  Future<String> _getSqliteDatabaseFullPath() async {
+    try {
+      final path = await getDatabasesPath();
+      return join(path, databaseFileName);
+    } catch (e) {
+      throw DbException(error: e);
+    }
+  }
+
+  Future<void> _onConfigure(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
+
+  Future<void> _executeMultupleQueriesWithTransaction(
+    Database db,
+    List<String> queries,
+  ) async {
+    await db.transaction<void>(
+      (txn) async {
+        for (final query in queries) {
+          await txn.execute(query);
+        }
+      },
+    );
+  }
+
+  Future<void> _onCreate(
+    Database db,
+    List<String>? queries,
+  ) async {
+    if (queries == null || queries.isEmpty) return;
+    await _executeMultupleQueriesWithTransaction(db, queries);
+  }
+
+  Future<void> _onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+    List<String>? queries,
+  ) async {
+    if (queries == null || queries.isEmpty) return;
+    if (newVersion > oldVersion) {
+      await _executeMultupleQueriesWithTransaction(db, queries);
+    }
+  }
 
   @override
   Future<JobDone> openSqliteDatabase({
-    List<CreateTableWrapper>? createTableQueries,
+    int databaseVersion = 1,
+    List<String>? onCreateQueries,
+    List<String>? onUpgradeQueries,
   }) async {
     try {
-      final databasePath = await getSqliteDatabaseFullPath();
+      final databasePath = await _getSqliteDatabaseFullPath();
       database = await databaseFactory.openDatabase(
         databasePath,
         options: OpenDatabaseOptions(
           version: databaseVersion,
-          onOpen: createTableQueries != null && createTableQueries.isNotEmpty ? (db) => _onOpened(db, createTableQueries) : null,
+          onConfigure: _onConfigure,
+          onCreate: (db, version) => _onCreate(db, onCreateQueries),
+          onUpgrade: (db, oldVersion, newVersion) => _onUpgrade(
+            db,
+            oldVersion,
+            newVersion,
+            onUpgradeQueries,
+          ),
         ),
       );
       return const JobDone();
@@ -35,48 +89,14 @@ class SqlBrokerImpl implements SqlBroker {
     }
   }
 
-  Future<void> _onOpened(
-    Database db,
-    List<CreateTableWrapper> createTableQueries,
-  ) async {
-    final batch = db.batch();
-
-    for (final element in createTableQueries) {
-      if (!element.checkTableExist) {
-        batch.execute(element.query);
-        continue;
-      }
-
-      final queryResult = await db.rawQuery(
-        '''SELECT name FROM sqlite_master WHERE type="table" AND name="${element.table}"''',
-      );
-
-      if (queryResult.isEmpty) {
-        batch.execute(element.query);
-      }
-    }
-
-    await batch.commit();
-  }
-
   @override
   Future<JobDone> closeSqliteDatabase() async {
-    if (database == null) {
-      throw const DbException(error: 'Database object was null');
-    }
     try {
+      if (database == null) {
+        throw const DbException(error: 'Database object was null');
+      }
       await database!.close();
       return const JobDone();
-    } catch (e) {
-      throw DbException(error: e);
-    }
-  }
-
-  @override
-  Future<String> getSqliteDatabaseFullPath() async {
-    try {
-      final path = await getDatabasesPath();
-      return join(path, databaseFileName);
     } catch (e) {
       throw DbException(error: e);
     }
