@@ -24,10 +24,9 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
   }
 
   @override
-  Future<JobDone> write(String key, String value) async {
+  Future<void> write(String key, String value) async {
     try {
       await storage.write(key: key, value: value);
-      return const JobDone();
     } catch (e) {
       throw DatabaseBrokerException(error: e);
     }
@@ -52,20 +51,18 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
   }
 
   @override
-  Future<JobDone> delete(String key) async {
+  Future<void> delete(String key) async {
     try {
       await storage.delete(key: key);
-      return const JobDone();
     } catch (e) {
       throw DatabaseBrokerException(error: e);
     }
   }
 
   @override
-  Future<JobDone> deleteAll() async {
+  Future<void> deleteAll() async {
     try {
       await storage.deleteAll();
-      return const JobDone();
     } catch (e) {
       throw DatabaseBrokerException(error: e);
     }

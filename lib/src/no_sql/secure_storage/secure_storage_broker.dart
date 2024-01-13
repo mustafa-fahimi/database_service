@@ -5,13 +5,13 @@ abstract interface class SecureStorageBroker{
 
   Future<JobDone> initialize();
 
-  Future<JobDone> write(String key, String value);
+  Future<void> write(String key, String value);
 
   Future<String?> read(String key);
 
   Future<Map<String, String>> readAll();
 
-  Future<JobDone> delete(String key);
+  Future<void> delete(String key);
 
-  Future<JobDone> deleteAll();
+  Future<void> deleteAll();
 }
