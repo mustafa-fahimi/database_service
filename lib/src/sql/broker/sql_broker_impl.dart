@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:database_broker/database_broker.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
+typedef OnCreate = FutureOr<void> Function(Database, int)?;
+typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
 
 class SqlBrokerImpl implements SqlBroker {
   SqlBrokerImpl({
@@ -31,42 +36,20 @@ class SqlBrokerImpl implements SqlBroker {
   Future<void> _executeMultupleQueriesWithTransaction(
     Database db,
     List<String> queries,
-  ) async {
-    await db.transaction<void>(
-      (txn) async {
-        for (final query in queries) {
-          await txn.execute(query);
-        }
-      },
-    );
-  }
-
-  Future<void> _onCreate(
-    Database db,
-    List<String>? queries,
-  ) async {
-    if (queries == null || queries.isEmpty) return;
-    await _executeMultupleQueriesWithTransaction(db, queries);
-  }
-
-  Future<void> _onUpgrade(
-    Database db,
-    int oldVersion,
-    int oldVersionMustBe,
-    List<String>? queries,
-  ) async {
-    if (queries == null || queries.isEmpty) return;
-    if (oldVersion == oldVersionMustBe) {
-      await _executeMultupleQueriesWithTransaction(db, queries);
-    }
-  }
+  ) async =>
+      db.transaction<void>(
+        (txn) async {
+          for (final query in queries) {
+            await txn.execute(query);
+          }
+        },
+      );
 
   @override
   Future<JobDone> openSqliteDatabase({
     int databaseVersion = 1,
-    int oldVersionMustBe = 1,
-    List<String>? onCreateQueries,
-    List<String>? onUpgradeQueries,
+    OnCreate onCreate,
+    OnUpgrade onUpgrade,
   }) async {
     try {
       final databasePath = await _getSqliteDatabaseFullPath();
@@ -75,12 +58,11 @@ class SqlBrokerImpl implements SqlBroker {
         options: OpenDatabaseOptions(
           version: databaseVersion,
           onConfigure: _onConfigure,
-          onCreate: (db, version) => _onCreate(db, onCreateQueries),
-          onUpgrade: (db, oldVersion, _) => _onUpgrade(
+          onCreate: (db, version) => onCreate?.call(db, version),
+          onUpgrade: (db, oldVersion, newVersion) => onUpgrade?.call(
             db,
             oldVersion,
-            oldVersionMustBe,
-            onUpgradeQueries,
+            newVersion,
           ),
         ),
       );

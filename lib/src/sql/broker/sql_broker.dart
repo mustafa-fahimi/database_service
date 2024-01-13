@@ -6,9 +6,8 @@ abstract interface class SqlBroker {
 
   Future<JobDone> openSqliteDatabase({
     int databaseVersion = 1,
-    int oldVersionMustBe = 1,
-    List<String>? onCreateQueries,
-    List<String>? onUpgradeQueries,
+    OnCreate onCreate,
+    OnUpgrade onUpgrade,
   });
 
   Future<JobDone> closeSqliteDatabase();
