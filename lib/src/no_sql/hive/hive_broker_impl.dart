@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:database_broker/src/common/db_exception.dart';
 import 'package:database_broker/src/common/job_done.dart';
-import 'package:database_broker/src/no_sql/broker/no_sql_broker.dart';
-import 'package:database_broker/src/no_sql/security/no_sql_database_security.dart';
+import 'package:database_broker/src/no_sql/hive/hive_broker.dart';
+import 'package:database_broker/src/no_sql/hive/security/hive_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-class NoSqlBrokerImpl implements NoSqlBroker {
-  NoSqlBrokerImpl();
-  final NoSqlDatabaseSecurity _databaseSecurity = NoSqlDatabaseSecurity();
+class HiveBrokerImpl implements HiveBroker {
+  HiveBrokerImpl();
+  final HiveSecurity _databaseSecurity = HiveSecurity();
 
   @override
   Future<JobDone> initializeDatabase() async {

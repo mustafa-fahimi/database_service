@@ -7,9 +7,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// A class that handles the security of a NoSQL database by generating
 /// and storing an encryption key for AES data encryption.
 /// It uses FlutterSecureStorage to securely store the encryption key.
-class NoSqlDatabaseSecurity {
+class HiveSecurity {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-  final String _secureKey = 'tokenizer';
+  final String _secureKey = 'Y2xhc29y';
 
   /// This method reads the secure key from the secure storage.
   /// If the key does not exist,
@@ -29,8 +29,6 @@ class NoSqlDatabaseSecurity {
     }
   }
 
-  /// Generates a new secure key using Hive's `generateSecureKey()` method.
-  /// Returns a list of integers representing the new secure key.
   List<int> _generateNewSecureKey() => Hive.generateSecureKey();
 
   /// This method generates a new secure key and writes it to the secure storage
@@ -56,8 +54,6 @@ class NoSqlDatabaseSecurity {
     }
   }
 
-  /// Deletes the secure key from the secure storage.
-  /// Throws a [DbException] if an error occurs during the deletion.
   Future<void> deleteSecureKey() async {
     try {
       await _secureStorage.delete(key: _secureKey);
@@ -76,7 +72,7 @@ class NoSqlDatabaseSecurity {
   /// it from base64Url, and returns a [HiveAesCipher] object initialized with
   /// the encryption key.
   ///
-  /// If the secure key is null, a [DbException] is thrown set 
+  /// If the secure key is null, a [DbException] is thrown set
   /// to 'Secure key is null'.
   ///
   /// If an error occurs while reading the secure key a [DbException] is thrown.
