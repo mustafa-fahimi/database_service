@@ -11,14 +11,14 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  path: ^1.8.3
-  path_provider: ^2.1.1
+  path: ^1.9.0
+  path_provider: ^2.1.2
   sqflite: ^2.3.0
-  sqflite_common_ffi: ^2.3.0+2
+  sqflite_common_ffi: ^2.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^5.0.0+1
+  very_good_analysis: ^5.1.0
 
 flutter: null

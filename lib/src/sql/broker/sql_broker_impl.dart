@@ -33,18 +33,6 @@ class SqlBrokerImpl implements SqlBroker {
     await db.execute('PRAGMA foreign_keys = ON');
   }
 
-  Future<void> _executeMultupleQueriesWithTransaction(
-    Database db,
-    List<String> queries,
-  ) async =>
-      db.transaction<void>(
-        (txn) async {
-          for (final query in queries) {
-            await txn.execute(query);
-          }
-        },
-      );
-
   @override
   Future<JobDone> openSqliteDatabase({
     int databaseVersion = 1,
