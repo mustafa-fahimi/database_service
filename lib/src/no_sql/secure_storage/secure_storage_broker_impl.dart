@@ -1,5 +1,4 @@
 import 'package:database_broker/database_broker.dart';
-import 'package:database_broker/src/no_sql/secure_storage/secure_storage_broker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageBrokerImpl implements SecureStorageBroker {
