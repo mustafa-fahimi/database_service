@@ -35,7 +35,8 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
   @override
   Future<String?> read(String key) async {
     try {
-      return await storage.read(key: key);
+      final result = await storage.read(key: key);
+      return result;
     } catch (e) {
       throw DatabaseBrokerException(error: e);
     }
@@ -44,7 +45,8 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
   @override
   Future<Map<String, String>> readAll() async {
     try {
-      return await storage.readAll();
+      final result = await storage.readAll();
+      return result;
     } catch (e) {
       throw DatabaseBrokerException(error: e);
     }
