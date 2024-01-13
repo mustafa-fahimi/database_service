@@ -2,11 +2,14 @@
 library database_broker;
 
 /// Common
-export 'src/common/db_exception.dart';
+export 'src/common/database_broker_exception.dart';
 export 'src/common/job_done.dart';
-/// NoSQL
+/// Hive
 export 'src/no_sql/hive/hive_broker.dart';
 export 'src/no_sql/hive/hive_broker_impl.dart';
+/// Secure storage
+export 'src/no_sql/secure_storage/secure_storage_broker.dart';
+export 'src/no_sql/secure_storage/secure_storage_broker_impl.dart';
 /// SQL
-export 'src/sql/broker/sql_broker.dart';
-export 'src/sql/broker/sql_broker_impl.dart';
+export 'src/sql/sqflite/sqflite_broker.dart';
+export 'src/sql/sqflite/sqflite_broker_impl.dart';

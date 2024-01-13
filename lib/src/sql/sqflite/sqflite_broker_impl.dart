@@ -7,8 +7,8 @@ import 'package:sqflite/sqflite.dart';
 typedef OnCreate = FutureOr<void> Function(Database, int)?;
 typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
 
-class SqlBrokerImpl implements SqlBroker {
-  SqlBrokerImpl({
+class SqfliteBrokerImpl implements SqfliteBroker {
+  SqfliteBrokerImpl({
     required this.databaseFileName,
     this.defaultConflictAlgorithm = ConflictAlgorithm.ignore,
   }) : assert(
@@ -25,7 +25,7 @@ class SqlBrokerImpl implements SqlBroker {
       final path = await getDatabasesPath();
       return join(path, databaseFileName);
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -56,7 +56,7 @@ class SqlBrokerImpl implements SqlBroker {
       );
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -64,12 +64,12 @@ class SqlBrokerImpl implements SqlBroker {
   Future<JobDone> closeSqliteDatabase() async {
     try {
       if (database == null) {
-        throw const DbException(error: 'Database object was null');
+        throw const DatabaseBrokerException(error: 'Database object was null');
       }
       await database!.close();
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -101,7 +101,7 @@ class SqlBrokerImpl implements SqlBroker {
       );
       return queryResult;
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -133,7 +133,7 @@ class SqlBrokerImpl implements SqlBroker {
       );
       return queryResult.isNotEmpty ? queryResult.first : <String, Object?>{};
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -157,7 +157,7 @@ class SqlBrokerImpl implements SqlBroker {
         return false;
       }
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -183,7 +183,7 @@ class SqlBrokerImpl implements SqlBroker {
         return false;
       }
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -205,7 +205,7 @@ class SqlBrokerImpl implements SqlBroker {
         return false;
       }
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -218,7 +218,7 @@ class SqlBrokerImpl implements SqlBroker {
       await database!.execute(sql, arguments);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -228,7 +228,7 @@ class SqlBrokerImpl implements SqlBroker {
       final result = await database!.rawQuery('SELECT COUNT(*) FROM $table');
       return Sqflite.firstIntValue(result) ?? 0;
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 }

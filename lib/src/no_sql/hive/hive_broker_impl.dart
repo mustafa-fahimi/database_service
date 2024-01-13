@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:database_broker/src/common/db_exception.dart';
+import 'package:database_broker/src/common/database_broker_exception.dart';
 import 'package:database_broker/src/common/job_done.dart';
 import 'package:database_broker/src/no_sql/hive/hive_broker.dart';
 import 'package:database_broker/src/no_sql/hive/security/hive_security.dart';
@@ -21,7 +21,7 @@ class HiveBrokerImpl implements HiveBroker {
       );
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -31,7 +31,7 @@ class HiveBrokerImpl implements HiveBroker {
           await path_provider.getApplicationDocumentsDirectory();
       return Directory('${appDocumentDirectory.path}/clasor_database');
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -45,7 +45,7 @@ class HiveBrokerImpl implements HiveBroker {
       );
       return box;
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -55,7 +55,7 @@ class HiveBrokerImpl implements HiveBroker {
       await Hive.close();
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -69,7 +69,7 @@ class HiveBrokerImpl implements HiveBroker {
       await box.close();
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -82,12 +82,12 @@ class HiveBrokerImpl implements HiveBroker {
     try {
       final box = await openBox(boxName);
       if (box.containsKey(key)) {
-        throw const DbException(error: 'duplicate_key');
+        throw const DatabaseBrokerException(error: 'duplicate_key');
       }
       await box.put(key, value);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -101,7 +101,7 @@ class HiveBrokerImpl implements HiveBroker {
       await box.putAll(enteries);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -119,7 +119,7 @@ class HiveBrokerImpl implements HiveBroker {
       );
       return dbFetchResult;
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -132,12 +132,12 @@ class HiveBrokerImpl implements HiveBroker {
     try {
       final box = await openBox(boxName);
       if (!box.containsKey(boxName)) {
-        throw const DbException(error: 'key_not_exist');
+        throw const DatabaseBrokerException(error: 'key_not_exist');
       }
       await box.put(key, value);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -152,7 +152,7 @@ class HiveBrokerImpl implements HiveBroker {
       await box.put(key, value);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -166,7 +166,7 @@ class HiveBrokerImpl implements HiveBroker {
       await box.delete(key);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -180,7 +180,7 @@ class HiveBrokerImpl implements HiveBroker {
       await box.deleteAll(keys);
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -192,7 +192,7 @@ class HiveBrokerImpl implements HiveBroker {
       final box = await openBox(boxName);
       return await box.clear();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -205,7 +205,7 @@ class HiveBrokerImpl implements HiveBroker {
       await box.deleteFromDisk();
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -217,7 +217,7 @@ class HiveBrokerImpl implements HiveBroker {
       await _databaseSecurity.deleteSecureKey();
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -230,7 +230,7 @@ class HiveBrokerImpl implements HiveBroker {
       final box = await openBox(boxName);
       return box.containsKey(key);
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 
@@ -246,7 +246,7 @@ class HiveBrokerImpl implements HiveBroker {
       );
       return const JobDone();
     } catch (e) {
-      throw DbException(error: e);
+      throw DatabaseBrokerException(error: e);
     }
   }
 }
