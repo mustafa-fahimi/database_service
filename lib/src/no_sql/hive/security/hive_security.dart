@@ -35,8 +35,9 @@ class HiveSecurity {
   /// using the [_secureStorage] instance.
   /// The key is written with the [KeychainAccessibility.first_unlock]
   /// accessibility option on iOS and macOS.
-  /// If an error occurs during the write operation, a [DatabaseServiceException] is
-  /// thrown with the appropriate action and error message.
+  /// If an error occurs during the write operation, 
+  /// a [DatabaseServiceException] is thrown with the appropriate 
+  /// action and error message.
   Future<void> _writeSecureKey() async {
     try {
       await _secureStorage.write(
@@ -75,7 +76,8 @@ class HiveSecurity {
   /// If the secure key is null, a [DatabaseServiceException] is thrown set
   /// to 'Secure key is null'.
   ///
-  /// If an error occurs while reading the secure key a [DatabaseServiceException] is thrown.
+  /// If an error occurs while reading the secure key
+  /// a [DatabaseServiceException] is thrown.
   Future<HiveCipher> readEncryptionCipher() async {
     try {
       final secureStorageKey = await _secureStorage.read(
