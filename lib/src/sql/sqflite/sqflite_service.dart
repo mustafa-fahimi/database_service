@@ -1,8 +1,8 @@
-import 'package:database_broker/database_broker.dart';
+import 'package:database_service/database_service.dart';
 import 'package:sqflite/sqflite.dart';
 
-abstract interface class SqfliteBroker {
-  const SqfliteBroker();
+abstract interface class SqfliteService {
+  const SqfliteService();
 
   Future<JobDone> openSqliteDatabase({
     int databaseVersion = 1,

@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:database_broker/database_broker.dart';
+import 'package:database_service/database_service.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 typedef OnCreate = FutureOr<void> Function(Database, int)?;
 typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
 
-class SqfliteBrokerImpl implements SqfliteBroker {
-  SqfliteBrokerImpl({
+class SqfliteServiceImpl implements SqfliteService {
+  SqfliteServiceImpl({
     required this.databaseFileName,
     this.defaultConflictAlgorithm = ConflictAlgorithm.ignore,
   }) : assert(
@@ -25,7 +25,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
       final path = await getDatabasesPath();
       return join(path, databaseFileName);
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -56,7 +56,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
       );
       return const JobDone();
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -64,12 +64,12 @@ class SqfliteBrokerImpl implements SqfliteBroker {
   Future<JobDone> closeSqliteDatabase() async {
     try {
       if (database == null) {
-        throw const DatabaseBrokerException(error: 'Database object was null');
+        throw const DatabaseServiceException(error: 'Database object was null');
       }
       await database!.close();
       return const JobDone();
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -101,7 +101,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
       );
       return queryResult;
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -133,7 +133,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
       );
       return queryResult.isNotEmpty ? queryResult.first : <String, Object?>{};
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -157,7 +157,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
         return false;
       }
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -183,7 +183,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
         return false;
       }
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -205,7 +205,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
         return false;
       }
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -218,7 +218,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
       await database!.execute(sql, arguments);
       return const JobDone();
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -228,7 +228,7 @@ class SqfliteBrokerImpl implements SqfliteBroker {
       final result = await database!.rawQuery('SELECT COUNT(*) FROM $table');
       return Sqflite.firstIntValue(result) ?? 0;
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 }

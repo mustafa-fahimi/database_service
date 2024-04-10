@@ -1,8 +1,8 @@
-import 'package:database_broker/src/common/job_done.dart';
+import 'package:database_service/database_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-abstract interface class HiveBroker {
-  const HiveBroker();
+abstract interface class HiveService {
+  const HiveService();
 
   Future<JobDone> initializeDatabase();
 

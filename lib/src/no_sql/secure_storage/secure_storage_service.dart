@@ -1,7 +1,8 @@
-import 'package:database_broker/database_broker.dart';
 
-abstract interface class SecureStorageBroker{
-  const SecureStorageBroker();
+import 'package:database_service/database_service.dart';
+
+abstract interface class SecureStorageService {
+  const SecureStorageService();
 
   Future<JobDone> initialize();
 

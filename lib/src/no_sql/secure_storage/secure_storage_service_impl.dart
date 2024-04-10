@@ -1,8 +1,8 @@
-import 'package:database_broker/database_broker.dart';
+import 'package:database_service/database_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class SecureStorageBrokerImpl implements SecureStorageBroker {
-  SecureStorageBrokerImpl();
+class SecureStorageServiceImpl implements SecureStorageService {
+  SecureStorageServiceImpl();
 
   late FlutterSecureStorage storage;
 
@@ -19,7 +19,7 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
       );
       return const JobDone();
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -28,7 +28,7 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
     try {
       await storage.write(key: key, value: value);
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -38,7 +38,7 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
       final result = await storage.read(key: key);
       return result;
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -48,7 +48,7 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
       final result = await storage.readAll();
       return result;
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -57,7 +57,7 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
     try {
       await storage.delete(key: key);
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 
@@ -66,7 +66,7 @@ class SecureStorageBrokerImpl implements SecureStorageBroker {
     try {
       await storage.deleteAll();
     } catch (e) {
-      throw DatabaseBrokerException(error: e);
+      throw DatabaseServiceException(error: e);
     }
   }
 }
