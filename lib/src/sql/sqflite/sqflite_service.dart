@@ -12,6 +12,8 @@ abstract interface class SqfliteService {
 
   Future<JobDone> closeSqliteDatabase();
 
+  Future<JobDone> deleteSqliteDatabase();
+
   Future<List<Map<String, Object?>>> read(
     String table, {
     bool? distinct,

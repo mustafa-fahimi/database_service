@@ -74,6 +74,17 @@ class SqfliteServiceImpl implements SqfliteService {
   }
 
   @override
+  Future<JobDone> deleteSqliteDatabase() async {
+    try {
+      final databasePath = await _getSqliteDatabaseFullPath();
+      await databaseFactory.deleteDatabase(databasePath);
+      return const JobDone();
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
+  }
+
+  @override
   Future<List<Map<String, Object?>>> read(
     String table, {
     bool? distinct,
