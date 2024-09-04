@@ -1,3 +1,4 @@
+import 'package:database_service/src/common/database_service_exception.dart';
 import 'package:database_service/src/sql/drift/drift_database.dart';
 import 'package:database_service/src/sql/drift/drift_service.dart';
 import 'package:drift/drift.dart';
@@ -8,42 +9,80 @@ class DriftServiceImpl implements DriftService {
   final AppDatabase _database;
 
   @override
-  Future<void> insert<T extends Table, D>(Insertable<D> entity) async {
-    final table = _getTable<T, D>();
-    await _database.into(table).insert(entity);
-  }
-
-  @override
   Future<List<D>> getAll<T extends Table, D>() async {
-    final table = _getTable<T, D>();
-    return _database.select(table).get();
+    try {
+      final table = _getTable<T, D>();
+      final result = await _database.select(table).get();
+      return result;
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
   }
 
   @override
   Future<D?> getSingle<T extends Table, D>(
     Expression<bool> Function(T) filter,
   ) async {
-    final table = _getTable<T, D>();
-    return (_database.select(table)..where(filter)).getSingleOrNull();
+    try {
+      final table = _getTable<T, D>();
+      final result =
+          await (_database.select(table)..where(filter)).getSingleOrNull();
+      return result;
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
   }
 
   @override
-  Future<void> update<T extends Table, D>(Insertable<D> entity) async {
-    final table = _getTable<T, D>();
-    await _database.update(table).replace(entity);
+  Future<int> insert<T extends Table, D>(
+    Insertable<D> entity, {
+    InsertMode mode = InsertMode.insertOrAbort,
+    UpsertClause<T, D>? onConflict,
+  }) async {
+    try {
+      final table = _getTable<T, D>();
+      final result = await _database.into(table).insert(
+            entity,
+            mode: mode,
+            onConflict: onConflict,
+          );
+      return result;
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
+  }
+
+  @override
+  Future<bool> update<T extends Table, D>(Insertable<D> entity) async {
+    try {
+      final table = _getTable<T, D>();
+      final result = await _database.update(table).replace(entity);
+      return result;
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
   }
 
   @override
   Future<int> delete<T extends Table, D>(
     Expression<bool> Function(T) filter,
   ) async {
-    final table = _getTable<T, D>();
-    return (_database.delete(table)..where(filter)).go();
+    try {
+      final table = _getTable<T, D>();
+      final result = await (_database.delete(table)..where(filter)).go();
+      return result;
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
   }
 
   @override
   Future<void> closeDatabase() async {
-    await _database.close();
+    try {
+      await _database.close();
+    } catch (e) {
+      throw DatabaseServiceException(error: e);
+    }
   }
 
   TableInfo<T, D> _getTable<T extends Table, D>() {
