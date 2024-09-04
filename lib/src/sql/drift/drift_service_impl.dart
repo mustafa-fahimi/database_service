@@ -1,5 +1,5 @@
 import 'package:database_service/src/common/database_service_exception.dart';
-import 'package:database_service/src/sql/drift/drift_database.dart';
+import 'package:database_service/src/sql/drift/app_database.dart';
 import 'package:database_service/src/sql/drift/drift_service.dart';
 import 'package:drift/drift.dart';
 
