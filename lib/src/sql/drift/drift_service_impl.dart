@@ -1,12 +1,11 @@
 import 'package:database_service/src/common/database_service_exception.dart';
-import 'package:database_service/src/sql/drift/app_database.dart';
 import 'package:database_service/src/sql/drift/drift_service.dart';
 import 'package:drift/drift.dart';
 
 class DriftServiceImpl implements DriftService {
   const DriftServiceImpl(this._database);
 
-  final AppDatabase _database;
+  final GeneratedDatabase _database;
 
   @override
   Future<List<D>> getAll<T extends Table, D>() async {

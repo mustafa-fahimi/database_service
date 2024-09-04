@@ -14,7 +14,6 @@ export 'src/no_sql/secure_storage/secure_storage_service.dart';
 export 'src/no_sql/secure_storage/secure_storage_service_impl.dart';
 
 /// Drift
-export 'src/sql/drift/app_database.dart';
 export 'src/sql/drift/drift_service.dart';
 export 'src/sql/drift/drift_service_impl.dart';
 
