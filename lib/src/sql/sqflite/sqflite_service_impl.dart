@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:database_service/database_service.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 typedef OnCreate = FutureOr<void> Function(Database, int)?;
 typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
@@ -14,7 +16,13 @@ class SqfliteServiceImpl implements SqfliteService {
   }) : assert(
           databaseFileName.split('.').last == 'db',
           'File name format should be like this: Filename.db',
-        );
+        ) {
+    // Initialize FFI for Windows/macOS
+    if (Platform.isWindows || Platform.isMacOS) {
+      // This will override the global databaseFactory
+      databaseFactory = databaseFactoryFfi;
+    }
+  }
 
   final String databaseFileName;
   final ConflictAlgorithm defaultConflictAlgorithm;

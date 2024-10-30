@@ -1,6 +1,6 @@
 name: database_service
 description: A database broker for no-sql and sql databases
-version: 2.4.1
+version: 2.4.2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -20,5 +20,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   very_good_analysis: ^5.1.0
-
-flutter: null
