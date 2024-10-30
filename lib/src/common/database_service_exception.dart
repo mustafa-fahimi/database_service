@@ -4,5 +4,5 @@ class DatabaseServiceException implements Exception {
   final dynamic error;
 
   @override
-  String toString() => 'DatabaseBrokerException: $error';
+  String toString() => 'DatabaseServiceException: $error';
 }
