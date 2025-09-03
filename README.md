@@ -1,11 +1,11 @@
 # Database Service
 
-A database broker for SQL and NoSQL databases, providing a unified interface for various database implementations including Sqflite, Drift, Hive, and Secure Storage.
+A database broker for SQL and NoSQL databases, providing a unified interface for various database implementations including Sqflite, Drift, Hive, ObjectBox, and Secure Storage.
 
 ## Features
 
 - **SQL Databases**: Support for Sqflite (SQLite) and Drift
-- **NoSQL Databases**: Support for Hive and Flutter Secure Storage
+- **NoSQL Databases**: Support for Hive, ObjectBox, and Flutter Secure Storage
 - **Cross-Platform**: Works on Android, iOS, Windows, macOS, and Web
 - **Unified Interface**: Consistent API across all database implementations
 
@@ -44,13 +44,13 @@ If you're using Sqflite on the web, you need to set up the required WebAssembly 
 
 ## Platform Support
 
-| Platform | Sqflite | Drift | Hive | Secure Storage |
-|----------|---------|-------|------|----------------|
-| Android  | ✅      | ✅    | ✅   | ✅             |
-| iOS      | ✅      | ✅    | ✅   | ✅             |
-| Windows  | ✅      | ✅    | ✅   | ❌             |
-| macOS    | ✅      | ✅    | ✅   | ❌             |
-| Web      | ✅      | ❌    | ✅   | ❌             |
+| Platform | Sqflite | Drift | Hive | ObjectBox | Secure Storage |
+|----------|---------|-------|------|----------|----------------|
+| Android  | ✅      | ✅    | ✅   | ✅       | ✅             |
+| iOS      | ✅      | ✅    | ✅   | ✅       | ✅             |
+| Windows  | ✅      | ✅    | ✅   | ✅       | ❌             |
+| macOS    | ✅      | ✅    | ✅   | ✅       | ❌             |
+| Web      | ✅      | ❌    | ✅   | ❌       | ❌             |
 
 ## Dependencies
 
@@ -59,4 +59,6 @@ If you're using Sqflite on the web, you need to set up the required WebAssembly 
 - `sqflite_common_ffi_web`: SQLite for web platform
 - `drift`: Reactive persistence library
 - `hive`: Lightweight NoSQL database
+- `objectbox`: High-performance NoSQL database
+- `objectbox_flutter_libs`: Flutter platform libraries for ObjectBox
 - `flutter_secure_storage`: Secure storage for sensitive data
