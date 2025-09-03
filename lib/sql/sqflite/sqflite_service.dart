@@ -1,5 +1,11 @@
+import 'dart:async';
+
 import 'package:database_service/database_service.dart';
+import 'package:database_service/sql/sqflite/sqflite_service_impl.dart';
 import 'package:sqflite/sqflite.dart';
+
+typedef SqfliteBatch = Batch;
+typedef OnDowngrade = FutureOr<void> Function(Database, int, int)?;
 
 abstract interface class SqfliteService {
   const SqfliteService();
@@ -8,6 +14,7 @@ abstract interface class SqfliteService {
     int databaseVersion = 1,
     OnCreate onCreate,
     OnUpgrade onUpgrade,
+    OnDowngrade onDowngrade,
   });
 
   Future<JobDone> closeSqliteDatabase();
@@ -55,11 +62,7 @@ abstract interface class SqfliteService {
     ConflictAlgorithm? conflictAlgorithm,
   });
 
-  Future<bool> delete(
-    String table, {
-    String? where,
-    List<Object?>? whereArgs,
-  });
+  Future<bool> delete(String table, {String? where, List<Object?>? whereArgs});
 
   /// Executes a raw SQL query with optional arguments and returns
   /// a [Future] that completes with a [JobDone] object.
@@ -77,5 +80,22 @@ abstract interface class SqfliteService {
   /// ```
   Future<JobDone> excuteRawQuery(String sql, [List<Object?>? arguments]);
 
+  Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]);
+
+  Future<int> rawInsert(String sql, [List<Object?>? arguments]);
+
+  Future<int> rawUpdate(String sql, [List<Object?>? arguments]);
+
+  Future<int> rawDelete(String sql, [List<Object?>? arguments]);
+
   Future<int> countRows(String table);
+
+  Future<T> transaction<T>(Future<T> Function(Transaction txn) action);
+
+  Future<List<Object?>> executeBatch(
+    void Function(SqfliteBatch batch) operations, {
+    bool? exclusive,
+    bool? noResult,
+    bool? continueOnError,
+  });
 }
