@@ -73,12 +73,6 @@ abstract interface class DriftService {
     List<Object?> values,
   );
 
-  Future<List<D>> getBetween<T extends Table, D>(
-    Expression<Object?> column,
-    Object? min,
-    Object? max,
-  );
-
   Future<List<D>> getLike<T extends Table, D>(
     Expression<String> column,
     String pattern,

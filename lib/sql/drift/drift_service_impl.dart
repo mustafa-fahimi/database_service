@@ -24,8 +24,9 @@ class DriftServiceImpl implements DriftService {
   ) async {
     try {
       final table = _getTable<T, D>();
-      final result =
-          await (_database.select(table)..where(filter)).getSingleOrNull();
+      final result = await (_database.select(
+        table,
+      )..where(filter)).getSingleOrNull();
       return result;
     } catch (e) {
       throw DatabaseServiceException(error: e);
@@ -40,11 +41,9 @@ class DriftServiceImpl implements DriftService {
   }) async {
     try {
       final table = _getTable<T, D>();
-      final result = await _database.into(table).insert(
-            entity,
-            mode: mode,
-            onConflict: onConflict,
-          );
+      final result = await _database
+          .into(table)
+          .insert(entity, mode: mode, onConflict: onConflict);
       return result;
     } catch (e) {
       throw DatabaseServiceException(error: e);
@@ -95,11 +94,9 @@ class DriftServiceImpl implements DriftService {
       final results = <int>[];
 
       for (final entity in entities) {
-        final result = await _database.into(table).insert(
-              entity,
-              mode: mode,
-              onConflict: onConflict,
-            );
+        final result = await _database
+            .into(table)
+            .insert(entity, mode: mode, onConflict: onConflict);
         results.add(result);
       }
 
@@ -215,35 +212,32 @@ class DriftServiceImpl implements DriftService {
   }
 
   @override
-  Future<int> customUpdate(String query, {
+  Future<int> customUpdate(
+    String query, {
     List<Variable<Object>>? variables,
   }) async {
     try {
-      return await _database.customUpdate(
-        query,
-        variables: variables ?? [],
-      );
+      return await _database.customUpdate(query, variables: variables ?? []);
     } catch (e) {
       throw DatabaseServiceException(error: e);
     }
   }
 
   @override
-  Future<int> customInsert(String query, {
+  Future<int> customInsert(
+    String query, {
     List<Variable<Object>>? variables,
   }) async {
     try {
-      return await _database.customInsert(
-        query,
-        variables: variables ?? [],
-      );
+      return await _database.customInsert(query, variables: variables ?? []);
     } catch (e) {
       throw DatabaseServiceException(error: e);
     }
   }
 
   @override
-  Future<void> customStatement(String query, {
+  Future<void> customStatement(
+    String query, {
     List<Variable<Object>>? variables,
   }) async {
     try {
@@ -266,7 +260,9 @@ class DriftServiceImpl implements DriftService {
         if (combinedFilter == null) {
           combinedFilter = filter;
         } else {
-          combinedFilter = andLogic ? combinedFilter & filter : combinedFilter | filter;
+          combinedFilter = andLogic
+              ? combinedFilter & filter
+              : combinedFilter | filter;
         }
       }
 
@@ -274,7 +270,9 @@ class DriftServiceImpl implements DriftService {
         return await _database.select(table).get();
       }
 
-      return await (_database.select(table)..where((_) => combinedFilter!)).get();
+      return await (_database.select(
+        table,
+      )..where((_) => combinedFilter!)).get();
     } catch (e) {
       throw DatabaseServiceException(error: e);
     }
@@ -287,30 +285,9 @@ class DriftServiceImpl implements DriftService {
   ) async {
     try {
       final table = _getTable<T, D>();
-      return await (_database.select(table)..where((_) => column.isIn(values))).get();
-    } catch (e) {
-      throw DatabaseServiceException(error: e);
-    }
-  }
-
-  @override
-  Future<List<D>> getBetween<T extends Table, D>(
-    Expression<Object?> column,
-    Object? min,
-    Object? max,
-  ) async {
-    try {
-      final table = _getTable<T, D>();
-      if (min != null && max != null) {
-        // Use a simpler approach - get all and filter in memory for now
-        final allRecords = await _database.select(table).get();
-        return allRecords.where((record) {
-          // This is a simplified approach - in a real implementation you'd use proper SQL
-          return true; // Placeholder
-        }).toList();
-      } else {
-        return await _database.select(table).get();
-      }
+      return await (_database.select(
+        table,
+      )..where((_) => column.isIn(values))).get();
     } catch (e) {
       throw DatabaseServiceException(error: e);
     }
@@ -323,7 +300,9 @@ class DriftServiceImpl implements DriftService {
   ) async {
     try {
       final table = _getTable<T, D>();
-      return await (_database.select(table)..where((_) => column.like(pattern))).get();
+      return await (_database.select(
+        table,
+      )..where((_) => column.like(pattern))).get();
     } catch (e) {
       throw DatabaseServiceException(error: e);
     }
@@ -342,7 +321,9 @@ class DriftServiceImpl implements DriftService {
         if (combinedCondition == null) {
           combinedCondition = condition;
         } else {
-          combinedCondition = andLogic ? combinedCondition & condition : combinedCondition | condition;
+          combinedCondition = andLogic
+              ? combinedCondition & condition
+              : combinedCondition | condition;
         }
       }
 
@@ -452,7 +433,9 @@ class DriftServiceImpl implements DriftService {
         query = query..where(filter);
       }
 
-      query = query..orderBy(orderBy)..limit(1);
+      query = query
+        ..orderBy(orderBy)
+        ..limit(1);
 
       return await query.getSingleOrNull();
     } catch (e) {
@@ -461,14 +444,13 @@ class DriftServiceImpl implements DriftService {
   }
 
   @override
-  Future<int> count<T extends Table, D>({
-    Expression<bool>? filter,
-  }) async {
+  Future<int> count<T extends Table, D>({Expression<bool>? filter}) async {
     try {
       final table = _getTable<T, D>();
       final whereClause = filter != null ? ' WHERE $filter' : '';
 
-      final sql = 'SELECT COUNT(*) as count FROM ${table.actualTableName}$whereClause';
+      final sql =
+          'SELECT COUNT(*) as count FROM ${table.actualTableName}$whereClause';
       final results = await _database.customSelect(sql).get();
 
       if (results.isEmpty) return 0;
@@ -487,7 +469,8 @@ class DriftServiceImpl implements DriftService {
       final table = _getTable<T, D>();
       final whereClause = filter != null ? ' WHERE $filter' : '';
 
-      final sql = 'SELECT SUM($columnName) as sum FROM ${table.actualTableName}$whereClause';
+      final sql =
+          'SELECT SUM($columnName) as sum FROM ${table.actualTableName}$whereClause';
       final results = await _database.customSelect(sql).get();
 
       if (results.isEmpty) return null;
@@ -506,7 +489,8 @@ class DriftServiceImpl implements DriftService {
       final table = _getTable<T, D>();
       final whereClause = filter != null ? ' WHERE $filter' : '';
 
-      final sql = 'SELECT AVG($columnName) as avg FROM ${table.actualTableName}$whereClause';
+      final sql =
+          'SELECT AVG($columnName) as avg FROM ${table.actualTableName}$whereClause';
       final results = await _database.customSelect(sql).get();
 
       if (results.isEmpty) return null;
@@ -525,7 +509,8 @@ class DriftServiceImpl implements DriftService {
       final table = _getTable<T, D>();
       final whereClause = filter != null ? ' WHERE $filter' : '';
 
-      final sql = 'SELECT MIN($columnName) as min FROM ${table.actualTableName}$whereClause';
+      final sql =
+          'SELECT MIN($columnName) as min FROM ${table.actualTableName}$whereClause';
       final results = await _database.customSelect(sql).get();
 
       if (results.isEmpty) return null;
@@ -544,7 +529,8 @@ class DriftServiceImpl implements DriftService {
       final table = _getTable<T, D>();
       final whereClause = filter != null ? ' WHERE $filter' : '';
 
-      final sql = 'SELECT MAX($columnName) as max FROM ${table.actualTableName}$whereClause';
+      final sql =
+          'SELECT MAX($columnName) as max FROM ${table.actualTableName}$whereClause';
       final results = await _database.customSelect(sql).get();
 
       if (results.isEmpty) return null;
@@ -564,32 +550,30 @@ class DriftServiceImpl implements DriftService {
     try {
       final table = _getTable<T, D>();
 
-      // Build custom SQL query for complex aggregations with GROUP BY and HAVING
       final selectParts = <String>[];
 
-      // Add group by columns
       selectParts.addAll(groupByColumns);
 
-      // Add aggregation expressions
       for (final entry in aggregations.entries) {
         selectParts.add('${entry.value} as ${entry.key}');
       }
 
       final selectClause = selectParts.join(', ');
-      final groupByClause = groupByColumns.isNotEmpty ? ' GROUP BY ${groupByColumns.join(', ')}' : '';
+      final groupByClause = groupByColumns.isNotEmpty
+          ? ' GROUP BY ${groupByColumns.join(', ')}'
+          : '';
       final havingClause = having != null ? ' HAVING $having' : '';
       final whereClause = filter != null ? ' WHERE $filter' : '';
 
-      final sql = 'SELECT $selectClause FROM ${table.actualTableName}$whereClause$groupByClause$havingClause';
+      final sql =
+          'SELECT $selectClause FROM ${table.actualTableName}$whereClause$groupByClause$havingClause';
 
       final results = await _database.customSelect(sql).get();
 
-      // Convert results to Map format
       final List<Map<String, Object?>> mappedResults = [];
       for (final result in results) {
         final Map<String, Object?> row = {};
 
-        // Add all values from the result
         for (final key in result.data.keys) {
           row[key] = result.data[key];
         }
