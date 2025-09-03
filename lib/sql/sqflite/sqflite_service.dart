@@ -94,6 +94,52 @@ abstract interface class SqfliteService {
 
   Future<int> countRows(String table);
 
+  Future<int> count(
+    String table, {
+    String? where,
+    List<Object?>? whereArgs,
+  });
+
+  Future<double?> sum(
+    String table,
+    String column, {
+    String? where,
+    List<Object?>? whereArgs,
+  });
+
+  Future<double?> avg(
+    String table,
+    String column, {
+    String? where,
+    List<Object?>? whereArgs,
+  });
+
+  Future<Object?> min(
+    String table,
+    String column, {
+    String? where,
+    List<Object?>? whereArgs,
+  });
+
+  Future<Object?> max(
+    String table,
+    String column, {
+    String? where,
+    List<Object?>? whereArgs,
+  });
+
+  Future<List<Map<String, Object?>>> aggregateQuery(
+    String table, {
+    required List<String> groupBy,
+    required Map<String, String> aggregations,
+    String? where,
+    List<Object?>? whereArgs,
+    String? having,
+    String? orderBy,
+    int? limit,
+    int? offset,
+  });
+
   Future<T> transaction<T>(Future<T> Function(Transaction txn) action);
 
   Future<List<Object?>> executeBatch(
