@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:database_service/database_service.dart';
-import 'package:database_service/src/no_sql/hive/security/hive_security.dart';
+import 'package:database_service/no_sql/hive/security/hive_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
