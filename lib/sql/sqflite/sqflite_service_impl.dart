@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:database_service/database_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 typedef OnCreate = FutureOr<void> Function(Database, int)?;
 typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
@@ -19,10 +21,13 @@ class SqfliteServiceImpl implements SqfliteService {
          databaseFileName.split('.').last == 'db',
          'File name format should be like this: Filename.db',
        ) {
-    // Initialize FFI for Windows/macOS
+    // Initialize FFI for Windows/macOS and Web
     if (Platform.isWindows || Platform.isMacOS) {
       // This will override the global databaseFactory
       databaseFactory = databaseFactoryFfi;
+    } else if (kIsWeb) {
+      // Use web factory for web platform
+      databaseFactory = databaseFactoryFfiWeb;
     }
   }
 
@@ -32,8 +37,13 @@ class SqfliteServiceImpl implements SqfliteService {
 
   Future<String> _getSqliteDatabaseFullPath() async {
     try {
-      final path = await getDatabasesPath();
-      return join(path, databaseFileName);
+      if (kIsWeb) {
+        // For web, just return the database name (stored in IndexedDB)
+        return databaseFileName;
+      } else {
+        final path = await getDatabasesPath();
+        return join(path, databaseFileName);
+      }
     } catch (e) {
       throw DatabaseServiceException(error: e);
     }
@@ -49,6 +59,7 @@ class SqfliteServiceImpl implements SqfliteService {
     OnCreate onCreate,
     OnUpgrade onUpgrade,
     OnDowngrade onDowngrade,
+    bool readOnly = false,
   }) async {
     try {
       final databasePath = await _getSqliteDatabaseFullPath();
@@ -56,6 +67,7 @@ class SqfliteServiceImpl implements SqfliteService {
         databasePath,
         options: OpenDatabaseOptions(
           version: databaseVersion,
+          readOnly: readOnly,
           onConfigure: _onConfigure,
           onCreate: (db, version) => onCreate?.call(db, version),
           onUpgrade: (db, oldVersion, newVersion) =>
@@ -241,7 +253,10 @@ class SqfliteServiceImpl implements SqfliteService {
   }
 
   @override
-  Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]) async {
+  Future<List<Map<String, Object?>>> rawQuery(
+    String sql, [
+    List<Object?>? arguments,
+  ]) async {
     try {
       return await database!.rawQuery(sql, arguments);
     } catch (e) {

@@ -15,6 +15,7 @@ abstract interface class SqfliteService {
     OnCreate onCreate,
     OnUpgrade onUpgrade,
     OnDowngrade onDowngrade,
+    bool readOnly = false,
   });
 
   Future<JobDone> closeSqliteDatabase();
@@ -80,7 +81,10 @@ abstract interface class SqfliteService {
   /// ```
   Future<JobDone> excuteRawQuery(String sql, [List<Object?>? arguments]);
 
-  Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]);
+  Future<List<Map<String, Object?>>> rawQuery(
+    String sql, [
+    List<Object?>? arguments,
+  ]);
 
   Future<int> rawInsert(String sql, [List<Object?>? arguments]);
 
