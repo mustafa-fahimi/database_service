@@ -1,4 +1,3 @@
-
 import 'package:database_service/database_service.dart';
 
 abstract interface class SecureStorageService {
@@ -9,6 +8,8 @@ abstract interface class SecureStorageService {
   Future<void> write(String key, String value);
 
   Future<String?> read(String key);
+
+  Future<bool> containsKey(String key);
 
   Future<Map<String, String>> readAll();
 
