@@ -55,6 +55,32 @@ class SecureStorageServiceImpl implements SecureStorageService {
   }
 
   @override
+  Future<void> writeBatch(Map<String, String> data) async {
+    if (data.isEmpty) {
+      throw DatabaseServiceException(error: 'Data map cannot be empty');
+    }
+
+    for (final entry in data.entries) {
+      if (entry.key.isEmpty) {
+        throw DatabaseServiceException(error: 'Key cannot be empty');
+      }
+      if (entry.value.isEmpty) {
+        throw DatabaseServiceException(error: 'Value cannot be empty for key "${entry.key}"');
+      }
+    }
+
+    try {
+      for (final entry in data.entries) {
+        await _getStorage.write(key: entry.key, value: entry.value);
+      }
+    } catch (e) {
+      throw DatabaseServiceException(
+        error: 'Failed to write batch data: $e',
+      );
+    }
+  }
+
+  @override
   Future<String?> read(String key) async {
     if (key.isEmpty) {
       throw DatabaseServiceException(error: 'Key cannot be empty');
@@ -94,6 +120,18 @@ class SecureStorageServiceImpl implements SecureStorageService {
     } catch (e) {
       throw DatabaseServiceException(
         error: 'Failed to read all secure data: $e',
+      );
+    }
+  }
+
+  @override
+  Future<List<String>> getKeys() async {
+    try {
+      final data = await _getStorage.readAll();
+      return data.keys.toList();
+    } catch (e) {
+      throw DatabaseServiceException(
+        error: 'Failed to get keys: $e',
       );
     }
   }
