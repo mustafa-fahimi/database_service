@@ -1,3 +1,4 @@
-## 1.0.0
+# 2.0.0
 
-- Implementation of database services
+## Improvements
+- **Secure Storage Service**: Enhanced with input validation, improved error handling, initialization safety, cross-platform security options, and resource cleanup
