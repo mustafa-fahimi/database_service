@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:database_service_wrapper/database_service_wrapper.dart';
-import 'package:database_service_wrapper/sql/sqflite/d_b_s_w_sqflite_service_implementation.dart';
 import 'package:sqflite/sqflite.dart';
 
 typedef SqfliteBatch = Batch;
+typedef OnCreate = FutureOr<void> Function(Database, int)?;
+typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
 typedef OnDowngrade = FutureOr<void> Function(Database, int, int)?;
 
 abstract interface class DBSWSqfliteService {
@@ -94,11 +95,7 @@ abstract interface class DBSWSqfliteService {
 
   Future<int> countRows(String table);
 
-  Future<int> count(
-    String table, {
-    String? where,
-    List<Object?>? whereArgs,
-  });
+  Future<int> count(String table, {String? where, List<Object?>? whereArgs});
 
   Future<double?> sum(
     String table,

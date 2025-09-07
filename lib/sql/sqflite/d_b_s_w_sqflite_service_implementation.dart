@@ -8,11 +8,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
-typedef OnCreate = FutureOr<void> Function(Database, int)?;
-typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
-typedef OnDowngrade = FutureOr<void> Function(Database, int, int)?;
-typedef SqfliteBatch = Batch;
-
 class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   DBSWSqfliteServiceImplementation({
     required this.databaseFileName,
@@ -319,9 +314,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
       final batch = database!.batch();
       operations(batch);
@@ -343,9 +336,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
       final result = await database!.rawQuery(
         'SELECT COUNT(*) as count FROM $table${where != null ? ' WHERE $where' : ''}',
@@ -366,9 +357,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
       final result = await database!.rawQuery(
         'SELECT SUM($column) as sum FROM $table${where != null ? ' WHERE $where' : ''}',
@@ -389,9 +378,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
       final result = await database!.rawQuery(
         'SELECT AVG($column) as avg FROM $table${where != null ? ' WHERE $where' : ''}',
@@ -412,9 +399,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
       final result = await database!.rawQuery(
         'SELECT MIN($column) as min FROM $table${where != null ? ' WHERE $where' : ''}',
@@ -435,9 +420,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
       final result = await database!.rawQuery(
         'SELECT MAX($column) as max FROM $table${where != null ? ' WHERE $where' : ''}',
@@ -463,9 +446,7 @@ class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DBSWException(
-          error: 'Database is not initialized',
-        );
+        throw const DBSWException(error: 'Database is not initialized');
       }
 
       // Build SELECT clause with aggregations

@@ -1,6 +1,7 @@
 name: database_service_wrapper
 description: A unified Flutter database service wrapper supporting SQL (Drift, Sqflite), NoSQL (Hive, ObjectBox), and secure storage with a consistent API
-version: 1.0.1
+
+version: 1.0.2
 repository: https://github.com/mustafa-fahimi/database_service_wrapper.git
 
 environment:
