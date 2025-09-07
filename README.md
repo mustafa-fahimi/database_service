@@ -1,64 +1,167 @@
-# Database Service
+# Database Service Wrapper
 
-A database broker for SQL and NoSQL databases, providing a unified interface for various database implementations including Sqflite, Drift, Hive, ObjectBox, and Secure Storage.
+[![pub package](https://img.shields.io/pub/v/database_service_wrapper.svg)](https://pub.dev/packages/database_service_wrapper)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+A unified Flutter database service wrapper that provides a consistent API for various database solutions, including SQL databases (Drift, Sqflite), NoSQL databases (Hive, ObjectBox), and secure storage.
 
 ## Features
 
-- **SQL Databases**: Support for Sqflite (SQLite) and Drift
-- **NoSQL Databases**: Support for Hive, ObjectBox, and Flutter Secure Storage
-- **Cross-Platform**: Works on Android, iOS, Windows, macOS, and Web
-- **Unified Interface**: Consistent API across all database implementations
+- **Unified API**: Consistent interface across all supported databases
+- **Multiple Database Support**:
+  - SQL: Drift, Sqflite
+  - NoSQL: Hive, ObjectBox
+  - Secure Storage: Flutter Secure Storage
+- **Type Safety**: Strong typing with Dart's type system
+- **Transaction Support**: Batch operations and transactions
+- **Error Handling**: Comprehensive error handling with custom exceptions
+- **Cross-Platform**: Works on iOS, Android, Web, and Desktop
 
-## Setup
+## Supported Databases
 
-### Web Support Setup
+| Database | Type | Use Case |
+|----------|------|----------|
+| **Drift** | SQL | Advanced SQL queries, migrations, reactive streams |
+| **Sqflite** | SQL | SQLite database with raw SQL support |
+| **Hive** | NoSQL | Fast key-value storage, encryption support |
+| **ObjectBox** | NoSQL | High-performance object database |
+| **Flutter Secure Storage** | Secure | Encrypted key-value storage for sensitive data |
 
-If you're using Sqflite on the web, you need to set up the required WebAssembly binaries and shared worker:
+## Installation
 
-1. Add the dependency to your `pubspec.yaml`:
-   ```yaml
-   dependencies:
-     sqflite_common_ffi_web: ^1.0.1+1
-   ```
+Add this to your `pubspec.yaml`:
 
-2. Run the setup command to install the binaries:
-   ```bash
-   dart run sqflite_common_ffi_web:setup
-   ```
+```yaml
+dependencies:
+  database_service_wrapper: ^1.0.0
+```
 
-   This will create the following files in your `web` folder:
-   - `sqlite3.wasm`
-   - `sqflite_sw.js`
+Then run:
 
-   **Note**: When SQLite3 and its WASM binary are updated, you may need to run the command again:
-   ```bash
-   dart run sqflite_common_ffi_web:setup --force
-   ```
+```bash
+flutter pub get
+```
 
-#### Web Platform Notes
+## Quick Start
 
-- The database is stored in the browser's IndexedDB
-- Use the same web port when debugging (different ports have separate IndexedDB instances)
-- The implementation supports cross-tab synchronization when Shared Workers are available
-- On browsers without Shared Worker support (like Android Chrome), a basic web worker is used
+### Hive Example
 
-## Platform Support
+```dart
+import 'package:database_service_wrapper/database_service_wrapper.dart';
 
-| Platform | Sqflite | Drift | Hive | ObjectBox | Secure Storage |
-|----------|---------|-------|------|----------|----------------|
-| Android  | ✅      | ✅    | ✅   | ✅       | ✅             |
-| iOS      | ✅      | ✅    | ✅   | ✅       | ✅             |
-| Windows  | ✅      | ✅    | ✅   | ✅       | ❌             |
-| macOS    | ✅      | ✅    | ✅   | ✅       | ❌             |
-| Web      | ✅      | ❌    | ✅   | ❌       | ❌             |
+// Create service instance
+final hiveService = DBSWHiveServiceImplementation();
 
-## Dependencies
+// Initialize database
+await hiveService.initializeDatabase();
 
-- `sqflite`: SQLite database for mobile
-- `sqflite_common_ffi`: SQLite for desktop platforms
-- `sqflite_common_ffi_web`: SQLite for web platform
-- `drift`: Reactive persistence library
-- `hive`: Lightweight NoSQL database
-- `objectbox`: High-performance NoSQL database
-- `objectbox_flutter_libs`: Flutter platform libraries for ObjectBox
-- `flutter_secure_storage`: Secure storage for sensitive data
+// Write data
+await hiveService.write('userBox', 'username', 'john_doe');
+
+// Read data
+final username = await hiveService.read('userBox', 'username');
+
+// Close database
+await hiveService.closeDatabase();
+```
+
+### Sqflite Example
+
+```dart
+import 'package:database_service_wrapper/database_service_wrapper.dart';
+
+// Create service instance
+final sqliteService = DBSWSqfliteServiceImplementation();
+
+// Open database
+await sqliteService.openSqliteDatabase(
+  databaseVersion: 1,
+  onCreate: (db, version) async {
+    await db.execute('''
+      CREATE TABLE users (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        email TEXT
+      )
+    ''');
+  },
+);
+
+// Insert data
+await sqliteService.insert('users', {
+  'name': 'John Doe',
+  'email': 'john@example.com',
+});
+
+// Query data
+final users = await sqliteService.read('users');
+
+// Close database
+await sqliteService.closeSqliteDatabase();
+```
+
+### Secure Storage Example
+
+```dart
+import 'package:database_service_wrapper/database_service_wrapper.dart';
+
+// Create service instance
+final secureService = DBSWSecureStorageServiceImplementation();
+
+// Write secure data
+await secureService.write('auth_token', 'your_jwt_token');
+
+// Read secure data
+final token = await secureService.read('auth_token');
+```
+
+## API Overview
+
+All services implement consistent interfaces with common operations:
+
+### Common Operations
+- `initializeDatabase()` / `openDatabase()` - Initialize database connection
+- `closeDatabase()` - Close database connection
+- `deleteDatabase()` - Delete database from disk
+
+### CRUD Operations
+- `write()` / `insert()` - Create/update data
+- `read()` - Read data
+- `update()` - Update existing data
+- `delete()` - Delete data
+
+### Advanced Features
+- **Transactions**: Atomic operations across multiple statements
+- **Batch Operations**: Multiple operations in a single transaction
+- **Aggregations**: Sum, count, average, min/max functions (SQL databases)
+- **Raw Queries**: Direct SQL execution (SQL databases)
+
+## Error Handling
+
+The package provides comprehensive error handling through `DBSWException`:
+
+```dart
+try {
+  await service.write('box', 'key', 'value');
+} on DBSWException catch (e) {
+  print('Database error: ${e.message}');
+} catch (e) {
+  print('Unexpected error: $e');
+}
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Mostafa Fahimi**
+
+---
+
+For more detailed documentation and examples, visit the [pub.dev page](https://pub.dev/packages/database_service_wrapper).

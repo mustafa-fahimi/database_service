@@ -1,25 +1,22 @@
-# 2.0.0
+# Changelog
 
-## Features
-- **Secure Storage Service**: Added `writeBatch()` method for efficient bulk write operations
-- **Secure Storage Service**: Added `getKeys()` method for listing all keys
-- **Secure Storage Service**: Added `containsKey()` method for checking key existence without reading the value
-- **Secure Storage Service**: Implemented Hive and Secure Storage services with encryption support
-- **ObjectBox Service**: Added ObjectBox service implementation and updated dependencies
-- **Drift and Sqflite Services**: Implemented batch operations and aggregate functions
-- **Sqflite Service**: Enhanced with additional methods and update dependencies
-- **Sqflite Service**: Enhanced for web support and added README documentation
+All notable changes to this project will be documented in this file.
 
-## Improvements
-- **Secure Storage Service**: Enhanced with input validation, improved error handling, initialization safety, cross-platform security options, and resource cleanup
+## [1.0.0]
 
-## Refactoring
-- **Drift Service**: Improved code formatting and removed unused method
+### Added
+- **Initial Release**: Unified Flutter database service wrapper
+- **SQL Database Support**: Sqflite and Drift implementations with consistent API
+- **NoSQL Database Support**: Hive and ObjectBox implementations
+- **Secure Storage**: Flutter Secure Storage integration
+- **Unified Interface**: Consistent API across all database types
+- **Error Handling**: Custom DBSWException for comprehensive error management
+- **Transaction Support**: Batch operations and atomic transactions
+- **CRUD Operations**: Complete create, read, update, delete functionality
+- **Advanced Features**: Aggregations, raw queries, and database management tools
 
-## Documentation
-- **README**: Updated to include ObjectBox support and enhanced platform compatibility table
-
-## Chore
-- Updated version to 2.0.0
-- Updated analysis options and dependencies
-- Added Hive and Secure Storage services
+### Features
+- Cross-platform support (iOS, Android, Web, Desktop)
+- Type-safe operations with Dart's type system
+- Easy database initialization and cleanup
+- Comprehensive documentation and examples
