@@ -249,9 +249,18 @@ class DBSWObjectboxServiceImplementation implements DBSWObjectboxService {
   Future<JobDone> clearAllData() async {
     try {
       _ensureStoreInitialized();
-      // Note: ObjectBox doesn't provide a direct way to clear all boxes
-      // This would need to be implemented by clearing each entity type individually
-      // For now, this is a placeholder
+      
+      final storeDirectory = await _getStoreDirectory();
+      
+      _store!.close();
+      _store = null;
+      
+      Store.removeDbFiles(storeDirectory.path);
+      
+      if (storeFactory != null) {
+        _store = await storeFactory!(storeDirectory.path);
+      }
+      
       return const JobDone();
     } catch (e) {
       throw DBSWException(error: e);
