@@ -1,8 +1,8 @@
-import 'package:database_service/database_service.dart';
+import 'package:database_service_wrapper/database_service_wrapper.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-abstract interface class HiveService {
-  const HiveService();
+abstract interface class DBSWHiveService {
+  const DBSWHiveService();
 
   Future<JobDone> initializeDatabase();
 
@@ -14,28 +14,13 @@ abstract interface class HiveService {
 
   Future<JobDone> write(String boxName, String key, dynamic value);
 
-  Future<JobDone> writeMultiple(
-    String boxName,
-    Map<dynamic, dynamic> enteries,
-  );
+  Future<JobDone> writeMultiple(String boxName, Map<dynamic, dynamic> enteries);
 
-  Future<dynamic> read(
-    String boxName,
-    String key, {
-    dynamic defaultValue,
-  });
+  Future<dynamic> read(String boxName, String key, {dynamic defaultValue});
 
-  Future<JobDone> update(
-    String boxName,
-    String key,
-    dynamic value,
-  );
+  Future<JobDone> update(String boxName, String key, dynamic value);
 
-  Future<JobDone> addOrUpdate(
-    String boxName,
-    String key,
-    dynamic value,
-  );
+  Future<JobDone> addOrUpdate(String boxName, String key, dynamic value);
 
   Future<JobDone> delete(String boxName, String key);
 

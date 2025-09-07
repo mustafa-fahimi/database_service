@@ -1,8 +1,8 @@
-import 'package:database_service/common/job_done.dart';
+import 'package:database_service_wrapper/common/job_done.dart';
 import 'package:objectbox/objectbox.dart';
 
-abstract interface class ObjectBoxService {
-  const ObjectBoxService();
+abstract interface class DBSWObjectboxService {
+  const DBSWObjectboxService();
 
   Future<JobDone> initializeStore();
 

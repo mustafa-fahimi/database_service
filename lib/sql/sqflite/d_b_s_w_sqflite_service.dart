@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:database_service/database_service.dart';
-import 'package:database_service/sql/sqflite/sqflite_service_impl.dart';
+import 'package:database_service_wrapper/database_service_wrapper.dart';
+import 'package:database_service_wrapper/sql/sqflite/d_b_s_w_sqflite_service_implementation.dart';
 import 'package:sqflite/sqflite.dart';
 
 typedef SqfliteBatch = Batch;
 typedef OnDowngrade = FutureOr<void> Function(Database, int, int)?;
 
-abstract interface class SqfliteService {
-  const SqfliteService();
+abstract interface class DBSWSqfliteService {
+  const DBSWSqfliteService();
 
   Future<JobDone> openSqliteDatabase({
     int databaseVersion = 1,

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:database_service/database_service.dart';
+import 'package:database_service_wrapper/database_service_wrapper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -13,8 +13,8 @@ typedef OnUpgrade = FutureOr<void> Function(Database, int, int)?;
 typedef OnDowngrade = FutureOr<void> Function(Database, int, int)?;
 typedef SqfliteBatch = Batch;
 
-class SqfliteServiceImpl implements SqfliteService {
-  SqfliteServiceImpl({
+class DBSWSqfliteServiceImplementation implements DBSWSqfliteService {
+  DBSWSqfliteServiceImplementation({
     required this.databaseFileName,
     this.defaultConflictAlgorithm = ConflictAlgorithm.ignore,
   }) : assert(
@@ -45,7 +45,7 @@ class SqfliteServiceImpl implements SqfliteService {
         return join(path, databaseFileName);
       }
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -78,7 +78,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -86,12 +86,12 @@ class SqfliteServiceImpl implements SqfliteService {
   Future<JobDone> closeSqliteDatabase() async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(error: 'Database object was null');
+        throw const DBSWException(error: 'Database object was null');
       }
       await database!.close();
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -102,7 +102,7 @@ class SqfliteServiceImpl implements SqfliteService {
       await databaseFactory.deleteDatabase(databasePath);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -134,7 +134,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return queryResult;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -166,7 +166,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return queryResult.isNotEmpty ? queryResult.first : <String, Object?>{};
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -190,7 +190,7 @@ class SqfliteServiceImpl implements SqfliteService {
         return false;
       }
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -216,7 +216,7 @@ class SqfliteServiceImpl implements SqfliteService {
         return false;
       }
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -238,7 +238,7 @@ class SqfliteServiceImpl implements SqfliteService {
         return false;
       }
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -248,7 +248,7 @@ class SqfliteServiceImpl implements SqfliteService {
       await database!.execute(sql, arguments);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -260,7 +260,7 @@ class SqfliteServiceImpl implements SqfliteService {
     try {
       return await database!.rawQuery(sql, arguments);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -269,7 +269,7 @@ class SqfliteServiceImpl implements SqfliteService {
     try {
       return await database!.rawInsert(sql, arguments);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -278,7 +278,7 @@ class SqfliteServiceImpl implements SqfliteService {
     try {
       return await database!.rawUpdate(sql, arguments);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -287,7 +287,7 @@ class SqfliteServiceImpl implements SqfliteService {
     try {
       return await database!.rawDelete(sql, arguments);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -297,7 +297,7 @@ class SqfliteServiceImpl implements SqfliteService {
       final result = await database!.rawQuery('SELECT COUNT(*) FROM $table');
       return Sqflite.firstIntValue(result) ?? 0;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -306,7 +306,7 @@ class SqfliteServiceImpl implements SqfliteService {
     try {
       return await database!.transaction(action);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -319,7 +319,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -331,7 +331,7 @@ class SqfliteServiceImpl implements SqfliteService {
         continueOnError: continueOnError,
       );
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -343,7 +343,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -353,7 +353,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return Sqflite.firstIntValue(result) ?? 0;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -366,7 +366,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -376,7 +376,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return result.isNotEmpty ? result.first['sum'] as double? : null;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -389,7 +389,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -399,7 +399,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return result.isNotEmpty ? result.first['avg'] as double? : null;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -412,7 +412,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -422,7 +422,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return result.isNotEmpty ? result.first['min'] : null;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -435,7 +435,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -445,7 +445,7 @@ class SqfliteServiceImpl implements SqfliteService {
       );
       return result.isNotEmpty ? result.first['max'] : null;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -463,7 +463,7 @@ class SqfliteServiceImpl implements SqfliteService {
   }) async {
     try {
       if (database == null) {
-        throw const DatabaseServiceException(
+        throw const DBSWException(
           error: 'Database is not initialized',
         );
       }
@@ -482,7 +482,9 @@ class SqfliteServiceImpl implements SqfliteService {
       final selectClause = selectColumns.join(', ');
 
       // Build GROUP BY clause
-      final groupByClause = groupBy.isNotEmpty ? ' GROUP BY ${groupBy.join(', ')}' : '';
+      final groupByClause = groupBy.isNotEmpty
+          ? ' GROUP BY ${groupBy.join(', ')}'
+          : '';
 
       // Build HAVING clause
       final havingClause = having != null ? ' HAVING $having' : '';
@@ -497,11 +499,12 @@ class SqfliteServiceImpl implements SqfliteService {
       // Build WHERE clause
       final whereClause = where != null ? ' WHERE $where' : '';
 
-      final sql = 'SELECT $selectClause FROM $table$whereClause$groupByClause$havingClause$orderByClause$limitClause$offsetClause';
+      final sql =
+          'SELECT $selectClause FROM $table$whereClause$groupByClause$havingClause$orderByClause$limitClause$offsetClause';
 
       return await database!.rawQuery(sql, whereArgs);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 }

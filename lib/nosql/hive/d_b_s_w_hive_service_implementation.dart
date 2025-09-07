@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:database_service/database_service.dart';
-import 'package:database_service/nosql/hive/hive_security.dart';
+import 'package:database_service_wrapper/database_service_wrapper.dart';
+import 'package:database_service_wrapper/nosql/hive/d_b_s_w_hive_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-class HiveServiceImpl implements HiveService {
-  HiveServiceImpl();
-  final HiveSecurity _databaseSecurity = HiveSecurity();
+class DBSWHiveServiceImplementation implements DBSWHiveService {
+  DBSWHiveServiceImplementation();
+  final DBSWHiveSecurity _databaseSecurity = DBSWHiveSecurity();
 
   @override
   Future<JobDone> initializeDatabase() async {
@@ -19,17 +19,17 @@ class HiveServiceImpl implements HiveService {
       );
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   Future<Directory> _getDatabaseDirectory() async {
     try {
-      final appDocumentDirectory =
-          await path_provider.getApplicationDocumentsDirectory();
+      final appDocumentDirectory = await path_provider
+          .getApplicationDocumentsDirectory();
       return Directory('${appDocumentDirectory.path}/clasor_database');
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -43,7 +43,7 @@ class HiveServiceImpl implements HiveService {
       );
       return box;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -53,39 +53,33 @@ class HiveServiceImpl implements HiveService {
       await Hive.close();
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> closeBox(
-    String boxName,
-  ) async {
+  Future<JobDone> closeBox(String boxName) async {
     try {
       final box = await openBox(boxName);
       await box.compact();
       await box.close();
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> write(
-    String boxName,
-    String key,
-    dynamic value,
-  ) async {
+  Future<JobDone> write(String boxName, String key, dynamic value) async {
     try {
       final box = await openBox(boxName);
       if (box.containsKey(key)) {
-        throw const DatabaseServiceException(error: 'duplicate_key');
+        throw const DBSWException(error: 'duplicate_key');
       }
       await box.put(key, value);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -99,7 +93,7 @@ class HiveServiceImpl implements HiveService {
       await box.putAll(enteries);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -111,99 +105,78 @@ class HiveServiceImpl implements HiveService {
   }) async {
     try {
       final box = await openBox(boxName);
-      final dbFetchResult = box.get(
-        key,
-        defaultValue: defaultValue,
-      );
+      final dbFetchResult = box.get(key, defaultValue: defaultValue);
       return dbFetchResult;
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> update(
-    String boxName,
-    String key,
-    dynamic value,
-  ) async {
+  Future<JobDone> update(String boxName, String key, dynamic value) async {
     try {
       final box = await openBox(boxName);
       if (!box.containsKey(boxName)) {
-        throw const DatabaseServiceException(error: 'key_not_exist');
+        throw const DBSWException(error: 'key_not_exist');
       }
       await box.put(key, value);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> addOrUpdate(
-    String boxName,
-    String key,
-    dynamic value,
-  ) async {
+  Future<JobDone> addOrUpdate(String boxName, String key, dynamic value) async {
     try {
       final box = await openBox(boxName);
       await box.put(key, value);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> delete(
-    String boxName,
-    String key,
-  ) async {
+  Future<JobDone> delete(String boxName, String key) async {
     try {
       final box = await openBox(boxName);
       await box.delete(key);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> deleteMultiple(
-    String boxName,
-    Iterable<dynamic> keys,
-  ) async {
+  Future<JobDone> deleteMultiple(String boxName, Iterable<dynamic> keys) async {
     try {
       final box = await openBox(boxName);
       await box.deleteAll(keys);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<int> clearBox(
-    String boxName,
-  ) async {
+  Future<int> clearBox(String boxName) async {
     try {
       final box = await openBox(boxName);
       return await box.clear();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<JobDone> deleteBoxFromDisk(
-    String boxName,
-  ) async {
+  Future<JobDone> deleteBoxFromDisk(String boxName) async {
     try {
       final box = await openBox(boxName);
       await box.deleteFromDisk();
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -215,20 +188,17 @@ class HiveServiceImpl implements HiveService {
       await _databaseSecurity.deleteSecureKey();
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
   @override
-  Future<bool> hasProperty(
-    String boxName,
-    String key,
-  ) async {
+  Future<bool> hasProperty(String boxName, String key) async {
     try {
       final box = await openBox(boxName);
       return box.containsKey(key);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -238,13 +208,10 @@ class HiveServiceImpl implements HiveService {
     bool override = false,
   }) async {
     try {
-      Hive.registerAdapter<T>(
-        adapter,
-        override: override,
-      );
+      Hive.registerAdapter<T>(adapter, override: override);
       return const JobDone();
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 }

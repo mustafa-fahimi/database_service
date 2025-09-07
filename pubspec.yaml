@@ -1,6 +1,6 @@
-name: database_service
-description: A database broker for sql and nosql databases
-version: 2.0.0
+name: database_service_wrapper
+description: A unified Flutter database service wrapper supporting SQL (Drift, Sqflite), NoSQL (Hive, ObjectBox), and secure storage with a consistent API
+version: 1.0.0
 
 environment:
   sdk: '>=3.9.0 <4.0.0'

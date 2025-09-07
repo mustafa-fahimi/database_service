@@ -1,7 +1,7 @@
-import 'package:database_service/database_service.dart';
+import 'package:database_service_wrapper/database_service_wrapper.dart';
 
-abstract interface class SecureStorageService {
-  const SecureStorageService();
+abstract interface class DBSWSecureStorageService {
+  const DBSWSecureStorageService();
 
   Future<JobDone> initialize();
 

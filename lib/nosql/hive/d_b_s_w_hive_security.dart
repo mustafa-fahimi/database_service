@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:database_service/database_service.dart';
+import 'package:database_service_wrapper/database_service_wrapper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// A class that handles the security of a NoSQL database by generating
 /// and storing an encryption key for AES data encryption.
 /// It uses FlutterSecureStorage to securely store the encryption key.
-class HiveSecurity {
+class DBSWHiveSecurity {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final String _secureKey = 'Y2xhc29y';
 
@@ -25,7 +25,7 @@ class HiveSecurity {
         await _writeSecureKey();
       }
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -35,8 +35,8 @@ class HiveSecurity {
   /// using the [_secureStorage] instance.
   /// The key is written with the [KeychainAccessibility.first_unlock]
   /// accessibility option on iOS and macOS.
-  /// If an error occurs during the write operation, 
-  /// a [DatabaseServiceException] is thrown with the appropriate 
+  /// If an error occurs during the write operation,
+  /// a [DatabaseServiceException] is thrown with the appropriate
   /// action and error message.
   Future<void> _writeSecureKey() async {
     try {
@@ -51,7 +51,7 @@ class HiveSecurity {
         value: base64UrlEncode(_generateNewSecureKey()),
       );
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -59,7 +59,7 @@ class HiveSecurity {
     try {
       await _secureStorage.delete(key: _secureKey);
     } catch (e) {
-      throw DatabaseServiceException(error: e);
+      throw DBSWException(error: e);
     }
   }
 
@@ -94,10 +94,10 @@ class HiveSecurity {
         final encryptionKey = base64Url.decode(secureStorageKey);
         return HiveAesCipher(encryptionKey);
       } else {
-        throw const DatabaseServiceException(error: 'Secure key is null');
+        throw const DBSWException(error: 'Secure key is null');
       }
     } catch (e) {
-      throw DatabaseServiceException(error: e.toString());
+      throw DBSWException(error: e.toString());
     }
   }
 }
